@@ -1,0 +1,55 @@
+from dataclasses import dataclass
+import ssl
+
+
+@dataclass
+class DBConfig:
+    """A Class holding our Database configuration
+
+    This Class holds our Database Configuration and has a function to get a TortoiseORM compliant connection String or a dictionary
+
+    Attributes:
+        database (str): Name of the Database which should be used.
+        user (str): Username for the Database connection.
+        host (str, optional): IP or DNS Hostname of the Database Server. Defaults to "127.0.0.1".
+        port (int, optional): Port of the Database Server. Defaults to 3306.
+        sslcontext (ssl.SSLContext, optional): SSLContext for the Connetion. Defaults to None.
+    """
+
+    database: str
+    user: str
+    password: str
+    host: str = "127.0.0.1"
+    port: int = 3306
+    sslcontext: ssl.SSLContext = None
+
+    @property
+    def connection_string(self):
+        """This Property does not support ssl!"""
+        return f"mysql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
+
+    def to_dict(self, connection_name: str = "default") -> dict:
+        """This Function generates a TortoiseORM compliant Database Connection dict
+    
+        Pass the Result of this Function into the `connections` Part of you Tortoise ORM
+        config dict.
+
+        Args:
+            connection_name (str, optional): Name of this Database Connection. Defaults to "default".
+
+        Returns:
+            dict: Tortoise ORM Compliant dictionary Config (at least for the `connections` section)
+        """
+        return {
+            connection_name: {
+                "engine": "tortoise.backends.mysql",
+                "credentials": {
+                    "database": self.database,
+                    "host": self.host,
+                    "password": self.password,
+                    "port": self.port,
+                    "user": self.user,
+                    "ssl": self.sslcontext,
+                },
+            }
+        }

@@ -7,8 +7,10 @@ name = "pypi"
 aio-pika = "*"
 tortoise-orm = {extras = ["asyncmy"], version = "*"}
 pyjwt = "*"
+python-ldap = "*"
 
 [dev-packages]
+sphinx-immaterial = "*"
 black = "*"
 
 [requires]
