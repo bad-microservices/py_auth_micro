@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 aio-pika = "*"
 tortoise-orm = {extras = ["asyncmy"], version = "*"}
+pyjwt = "*"
 
 [dev-packages]
 black = "*"

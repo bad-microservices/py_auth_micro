@@ -8,7 +8,4 @@ class User(Model):
     password_hash:bytes = fields.BinaryField()
     email:str = fields.CharField(max_length=100, unique=True)
     activated:bool = fields.BooleanField()
-    #token = fields.ForeignKeyField("models.Token",related_name="user")
-    #groups= fields.ManyToManyField(
-    #    "models.Group", related_name="members", through="group_user"
-    #)
+    
