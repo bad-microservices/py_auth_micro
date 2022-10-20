@@ -7,10 +7,10 @@ class LoginLDAP(LoginBaseClass):
     username: str
     password: str
 
-    def perform_login() -> bool:
+    def perform_login(self) -> bool:
 
         raise NotImplementedError
 
-    def _sync_groups():
+    def _sync_groups(self):
 
         raise NotImplementedError

@@ -31,7 +31,7 @@ class DBConfig:
 
     def to_dict(self, connection_name: str = "default") -> dict:
         """This Function generates a TortoiseORM compliant Database Connection dict
-    
+
         Pass the Result of this Function into the `connections` Part of you Tortoise ORM
         config dict.
 

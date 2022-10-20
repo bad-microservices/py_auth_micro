@@ -1,6 +1,6 @@
 from tortoise import fields
 from tortoise.models import Model
-from typing import Union, Optional
+from typing import Optional
 import jwt
 
 import datetime

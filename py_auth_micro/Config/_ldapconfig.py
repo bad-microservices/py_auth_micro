@@ -1,10 +1,10 @@
 from dataclasses import dataclass
-import ldap
+
 
 @dataclass
 class LDAPConfig:
     """a Configuration class storing our AD Related config
-    
+
     Attributes:
         address (str): Server Address.
         base_dn (str): Base DN for Users.
@@ -14,12 +14,13 @@ class LDAPConfig:
         ca_file (str, optional): Path to the CA File used for ldaps. Defaults to None.
 
     Example:
-        
-    
+
+
     """
-    address:str = "ldap://127.0.0.1:389"
-    base_dn:str = "ou=User,dc=ad,dc=local"
-    group:str = "allowed_to_login"
-    groups_prefix:str = "API_PERM_"
-    domain:str = "ad.local"
-    ca_file:str = None
+
+    address: str = "ldap://127.0.0.1:389"
+    base_dn: str = "ou=User,dc=ad,dc=local"
+    group: str = "allowed_to_login"
+    groups_prefix: str = "API_PERM_"
+    domain: str = "ad.local"
+    ca_file: str = None
