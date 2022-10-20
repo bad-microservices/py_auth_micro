@@ -1,13 +1,12 @@
 from tortoise import fields
 from tortoise.models import Model
-from typing import Union
+from typing import Union, Optional
 import jwt
 
 import datetime
 
 from ..Core import SignMethod
 from ..Config import TokenConfig
-from ._user import User
 
 
 class Token(Model):
@@ -21,14 +20,16 @@ class Token(Model):
         Model (_type_): _description_
     """
 
-    user: fields.ManyToManyRelation["User"] = fields.ForeignKeyField(
+    user: fields.ForeignKeyRelation["User"] = fields.ForeignKeyField(
         "models.User",
         related_name="token",
-        pk=True,
         description="The User which relates to this Token",
     )
     token_id: int = fields.BigIntField(
-        max_length=200, unique=True, description="ID of the Issued Token", index=True
+        max_length=200,
+        unique=True,
+        description="ID of the Issued Token",
+        pk=True,
     )
     ip: str = fields.CharField(
         max_length=39, description="IP That is valid for this User"
@@ -60,18 +61,21 @@ Valid Options>
 
     async def get_id_jwt(self, token_config: TokenConfig):
 
-        usergroups = []
-        for group in self.user.groups:
-            usergroups.append(str(group))
+        usergroups = await self.user.groups.all().values_list("name", flat=True)
+        # usergroups = []
+        # for group in self.user.groups:
+        #    usergroups.append(str(group))
 
         return jwt.encode(
-            {"groups": usergroups, "ip": self.ip},
+            {"groups": usergroups, "ip": self.ip, "username": str(self.user)},
             token_config.encode_secret(self.sign_method),
             headers={
-                "kid": self.token_id,
+                "kid": str(self.token_id),
                 "iss": token_config.issuer,
-                "iat": datetime.datetime.now(),
-                "exp": self.valid_until,
+                "iat": datetime.datetime.now().timestamp(),
+                "exp": self.valid_until.timestamp(),
+                "aud": self.ip,
+                "vhost": self.vhost,
             },
             algorithm=self.sign_method.value,
         )
@@ -80,25 +84,39 @@ Valid Options>
     async def verify_id_jwt(
         token_config: TokenConfig,
         id_jwt: str,
-        ip: Union[None, str] = None,
-        ignore_issuer_mismatch: bool = False,
-    ) -> "Token":
+        ip: Optional[str] = None,
+        check_issuer: bool = False,
+    ):
 
         # read header before verifying it
         token_header = jwt.get_unverified_header(id_jwt)
 
         # get token with matching token id from DB so we can compare...
-        token = await Token.get(token_id=token_header["kid"])
+        token = await Token.get(token_id=int(token_header["kid"]))
 
-        # get used sign method from DB
-        alg = token.sign_method.value
+        # check issuer if we care for it
+        if check_issuer and token_header["iss"] != token_config.issuer:
+            raise ValueError("issuer mismatch")
 
-        #verify send id jwt
+        # if and ip got specified check it
+        if ip is not None and (
+            token_header["aud"] != ip or token.ip != token_header["aud"]
+        ):
+            raise ValueError("Token IP mismatch!")
 
+        # check vhost
+        if token.vhost != token_header.get("vhost", None):
+            raise ValueError("VHost mismatch!")
 
+        # verify the id token
+        decoded = jwt.decode(
+            id_jwt,
+            token_config.decode_secret(token.sign_method),
+            algorithms=token.sign_method.value,
+        )
 
-
-        raise NotImplementedError
+        # return the Token from the Database
+        return token
 
     async def create_access_jwt(self, token_config: TokenConfig) -> str:
         """Creates an Access JWT
@@ -111,4 +129,22 @@ Valid Options>
         Returns:
             str: _description_
         """
-        raise NotImplementedError
+
+        usergroups = (
+            await (await self.user.get()).groups.all().values_list("name", flat=True)
+        )
+
+        valid_until = datetime.datetime.now() + datetime.timedelta(
+            minutes=token_config.access_lifetime
+        )
+
+        return jwt.encode(
+            {"groups": usergroups, "user": str(await self.user), "vhost": self.vhost},
+            token_config.encode_secret(token_config.default_sign_method),
+            headers={
+                "iss": token_config.issuer,
+                "exp": valid_until.timestamp(),
+                "iat": datetime.datetime.now().timestamp(),
+            },
+            algorithm=self.sign_method.value,
+        )

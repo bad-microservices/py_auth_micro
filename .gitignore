@@ -8,3 +8,4 @@ _static
 .vscode/settings.json
 
 test2.py
+clear_db.sql
