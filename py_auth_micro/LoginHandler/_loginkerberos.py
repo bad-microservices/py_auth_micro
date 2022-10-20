@@ -7,4 +7,4 @@ class LoginKerberos(LoginBaseClass):
 
     def perform_login() -> bool:
 
-        return False
+        raise NotImplementedError

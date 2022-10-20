@@ -43,3 +43,6 @@ class SessionFunctions:
                 return AuthSource.LDAP
             # if the user cant log in with ldap reraise the exc
             raise exc
+    
+    async def logout(self,identity_jwt:str):
+        raise NotImplementedError

@@ -3,6 +3,7 @@ from tortoise.models import Model
 import datetime
 
 from ..Core import AuthSource
+from ..Config import TokenConfig
 class User(Model):
 
     username:str = fields.CharField(max_length=30, unique=True,pk=True, description="Username")
@@ -24,3 +25,13 @@ Valid Options:
 
     token: fields.ReverseRelation["Token"]
     groups: fields.ReverseRelation["UserGroup"]
+
+
+    async def create_id_token(self) -> "Token":
+        raise NotImplementedError
+
+    async def revoke_id_token(self) -> bool:
+        raise NotImplementedError
+
+    def __str__(self):
+        return self.username

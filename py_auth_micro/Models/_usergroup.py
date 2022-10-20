@@ -8,3 +8,6 @@ class UserGroup(Model):
     members = fields.ManyToManyField(
         "models.UserGroup", related_name="groups", through="user_group_membership"
     )
+
+    def __str__(self):
+        return self.name

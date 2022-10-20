@@ -9,4 +9,8 @@ class LoginLDAP(LoginBaseClass):
 
     def perform_login() -> bool:
 
-        return False
+        raise NotImplementedError
+
+    def _sync_groups():
+
+        raise NotImplementedError
