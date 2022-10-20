@@ -14,6 +14,7 @@ class DBConfig:
         host (str, optional): IP or DNS Hostname of the Database Server. Defaults to "127.0.0.1".
         port (int, optional): Port of the Database Server. Defaults to 3306.
         sslcontext (ssl.SSLContext, optional): SSLContext for the Connetion. Defaults to None.
+        connection_string (str): Connectionstring for tortoise ORM using the specified Values
     """
 
     database: str

@@ -18,6 +18,6 @@ class SignMethod(Enum):
 
 
 class AuthSource(Enum):
-    LOCAL = LoginLocal
-    LDAP = LoginLDAP
-    KERBEROS = LoginKerberos
+    LOCAL = "LOCAL"
+    LDAP = "LDAP"
+    KERBEROS = "KERBEROS"
