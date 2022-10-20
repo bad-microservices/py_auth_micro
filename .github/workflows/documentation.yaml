@@ -10,11 +10,10 @@ jobs:
           python-version: "3.9"
       - name: Install dependencies
         run: |
-          pip install pipenv
-          pipenv install -d
+          pip install sphinx-immaterial
       - name: Sphinx build
         run: |
-          pipenv run sphinx-build doc _build
+          sphinx-build doc _build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
