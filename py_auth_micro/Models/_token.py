@@ -2,7 +2,6 @@ from tortoise import fields
 from tortoise.models import Model
 from typing import Optional
 import jwt
-
 import datetime
 
 from ..Core import SignMethod
@@ -20,7 +19,7 @@ class Token(Model):
         Model (_type_): _description_
     """
 
-    user: fields.ForeignKeyRelation["User"] = fields.ForeignKeyField(
+    user: fields.OneToOneRelation["User"] = fields.OneToOneField(
         "models.User",
         related_name="token",
         description="The User which relates to this Token",
@@ -62,9 +61,6 @@ Valid Options>
     async def get_id_jwt(self, token_config: TokenConfig):
 
         usergroups = await self.user.groups.all().values_list("name", flat=True)
-        # usergroups = []
-        # for group in self.user.groups:
-        #    usergroups.append(str(group))
 
         return jwt.encode(
             {"groups": usergroups, "ip": self.ip, "username": str(self.user)},
@@ -130,9 +126,7 @@ Valid Options>
             str: _description_
         """
 
-        usergroups = (
-            await (await self.user.get()).groups.all().values_list("name", flat=True)
-        )
+        usergroups = await (await self.user).groups.all().values_list("name", flat=True)
 
         valid_until = datetime.datetime.now() + datetime.timedelta(
             minutes=token_config.access_lifetime
