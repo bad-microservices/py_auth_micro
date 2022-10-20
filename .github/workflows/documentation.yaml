@@ -4,19 +4,24 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
       - name: Install dependencies
         run: |
-          pip install sphinx sphinx_rtd_theme
+          pip install pipenv
+          pipenv install -d
       - name: Sphinx build
         run: |
-          sphinx-build doc _build
+          pipenv run sphinx-build doc _build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         with:
-          publish_branch: gh-pages
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: master
+          external_repository: bad-microservices/bad-microservices.github.io
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: _build/
+          destination_dir: py_auth_micro
           force_orphan: true

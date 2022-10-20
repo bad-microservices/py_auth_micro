@@ -72,12 +72,7 @@ html_theme_options = {
     "version_dropdown": True,
     "version_info": [
         {
-            "version": "https://sphinx-immaterial.rtfd.io",
-            "title": "ReadTheDocs",
-            "aliases": [],
-        },
-        {
-            "version": "https://jbms.github.io/sphinx-immaterial",
+            "version": "https://bad-microservices.github.io/py_auth_micro",
             "title": "Github Pages",
             "aliases": [],
         },
@@ -88,11 +83,11 @@ html_theme_options = {
     "social": [
         {
             "icon": "fontawesome/brands/github",
-            "link": "https://github.com/jbms/sphinx-immaterial",
+            "link": "https://github.com/bad-microservices/py_auth_micro",
         },
         {
-            "icon": "fontawesome/brands/python",
-            "link": "https://pypi.org/project/sphinx-immaterial/",
+            "icon": "fontawesome/brands/discord",
+            "link": "https://discord.gg/7HUxPP9QNS",
         },
     ],
     # END: social icons
