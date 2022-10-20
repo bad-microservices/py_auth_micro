@@ -19,7 +19,7 @@ class LDAPHelper:
             conn.set_option(ldap.OPT_X_TLS_CACERTFILE, self.config.ca_file)
             conn.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
 
-        username = f"{self.config.suffix}\{username}"
+        username = f"{self.config.domain}\\{username}"
         conn.simple_bind_s(username, password)
         return conn
 
@@ -45,4 +45,5 @@ class LDAPHelper:
             else:
                 return False
         except Exception as err:
+            print(err)
             return False

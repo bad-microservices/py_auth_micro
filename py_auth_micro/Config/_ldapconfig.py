@@ -20,6 +20,6 @@ class LDAPConfig:
     address:str = "ldap://127.0.0.1:389"
     base_dn:str = "ou=User,dc=ad,dc=local"
     group:str = "allowed_to_login"
-    groups_prefix = "API_PERM_"
+    groups_prefix:str = "API_PERM_"
     domain:str = "ad.local"
     ca_file:str = None

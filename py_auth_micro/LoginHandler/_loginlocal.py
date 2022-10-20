@@ -1,5 +1,10 @@
-from ._loginhandler import LoginHandler
+from ._loginbaseclass import LoginBaseClass
 
-class LoginLocal(LoginHandler):
 
-    pass
+class LoginLocal(LoginBaseClass):
+    username: str
+    password: str
+
+    def perform_login() -> bool:
+
+        return False
