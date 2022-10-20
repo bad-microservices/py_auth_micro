@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from cryptography.hazmat.primitives.asymmetric.types import PRIVATE_KEY_TYPES
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend

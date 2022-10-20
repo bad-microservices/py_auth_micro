@@ -109,7 +109,7 @@ Valid Options>
             raise ValueError("VHost mismatch!")
 
         # verify the id token
-        decoded = jwt.decode(
+        jwt.decode(
             id_jwt,
             token_config.decode_secret(token.sign_method),
             algorithms=token.sign_method.value,

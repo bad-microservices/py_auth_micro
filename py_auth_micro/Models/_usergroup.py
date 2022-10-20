@@ -1,5 +1,6 @@
 from tortoise import fields
 from tortoise.models import Model
+from ._user import User
 
 
 class UserGroup(Model):

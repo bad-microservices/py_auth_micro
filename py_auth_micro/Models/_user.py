@@ -6,7 +6,6 @@ from typing import Optional
 from ..Core import AuthSource
 from ..Config import TokenConfig
 from ._token import Token
-from ._usergroup import UserGroup
 
 
 class User(Model):

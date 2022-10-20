@@ -22,4 +22,4 @@ class LoginBaseClass(ABC):
 
     @abstractmethod
     def perform_login(self) -> bool:
-        pass
+        raise NotImplementedError
