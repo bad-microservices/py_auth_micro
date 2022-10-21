@@ -1,7 +1,15 @@
+import re
+import datetime
+
+from typing import Optional
 from tortoise import fields
 from tortoise.models import Model
-import datetime
-from typing import Optional
+from tortoise.validators import (
+    MinLengthValidator,
+    MaxLengthValidator,
+    RegexValidator,
+    validate_ipv46_address,
+)
 
 from ..Core import AuthSource
 from ..Config import TokenConfig
@@ -11,7 +19,11 @@ from ._token import Token
 class User(Model):
 
     username: str = fields.CharField(
-        max_length=30, unique=True, pk=True, description="Username"
+        max_length=30,
+        unique=True,
+        pk=True,
+        description="Username",
+        validators=[RegexValidator("[a-z-_0-9]{4,30}", re.I)],
     )
     password_hash: bytes = fields.BinaryField(
         description="Hash of the password (if local user)", null=True
@@ -26,7 +38,20 @@ Valid Options:
  - KERBEROS""",
     )
     email: str = fields.CharField(
-        max_length=100, unique=True, description="Email address for the user"
+        max_length=100,
+        unique=True,
+        description="Email address for the user",
+        validators=[
+            #we split the regex onto multiple line for better readability
+            RegexValidator(
+                (
+                "[a-z0-9.!#$%&'*+\/=?^_`{|}~-]"
+                "+@[a-z0-9](?:[a-z0-9-]"
+                "{0,61}[a-z0-9])?(?:\.[a-z0-9]"
+                "(?:[a-z0-9-]{0,61}[a-z0-9])?)"
+                ),re.I
+            )
+        ],
     )
     activated: bool = fields.BooleanField(
         description="0: User did not verify his Email\n1: User verified his Email"

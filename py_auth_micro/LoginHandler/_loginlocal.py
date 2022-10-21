@@ -9,4 +9,6 @@ class LoginLocal(LoginBaseClass):
     
     async def login(self) -> bool:
 
-        raise NotImplementedError
+        pw_hash = self.user.password_hash
+
+        return bcrypt.checkpw(self.password.encode("utf-8"),pw_hash)

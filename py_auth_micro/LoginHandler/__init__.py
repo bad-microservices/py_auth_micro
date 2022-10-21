@@ -34,7 +34,7 @@ class LoginHandler:
         )
         if not await login_handler.login():
             raise ValueError("could not log in")
-            
+        
         return login_handler.user
 
     async def _get_login_type(

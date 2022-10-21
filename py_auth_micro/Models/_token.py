@@ -122,7 +122,7 @@ Valid Options>
             token_config (TokenConfig): Config to use for creating a Token
 
         Returns:
-            str: _description_
+            str: a JWT Token
         """
 
         usergroups = await (await self.user).groups.all().values_list("name", flat=True)
