@@ -43,11 +43,15 @@ Valid Options:
         GENERATED_SQL="NOW()",
         description="When was the user modified",
     )
-
-    token: fields.ReverseRelation["Token"]
-    groups: fields.ManyToManyRelation["UserGroup"] = fields.ManyToManyField(
-        "models.UserGroup", related_name="members", through="user_group_membership"
+    groups = fields.ManyToManyField(
+        model_name="models.Group",
+        through="usergroup",
+        related_name="users",
+        forward_key="username",
+        backward_key="name",
     )
+
+    token: fields.ReverseRelation[Token]
 
     async def create_id_token(
         self, token_config: TokenConfig, vhost: str = "/", ip: Optional[str] = None

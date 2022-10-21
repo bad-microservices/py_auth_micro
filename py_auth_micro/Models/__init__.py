@@ -1,5 +1,6 @@
-from ._usergroup import UserGroup
+
+from ._group import Group
 from ._token import Token
 from ._user import User
 
-__models__ = [UserGroup, Token, User]
+__models__ = [Token, User, Group]

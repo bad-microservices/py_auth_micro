@@ -1,10 +1,11 @@
 from ._loginbaseclass import LoginBaseClass
-
+from ..Models import User
 
 class LoginKerberos(LoginBaseClass):
     username: str
     password: str
+    user: User = None
 
-    def perform_login(self) -> bool:
+    async def login(self) -> bool:
 
         raise NotImplementedError

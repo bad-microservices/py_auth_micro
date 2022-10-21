@@ -1,10 +1,12 @@
 from ._loginbaseclass import LoginBaseClass
-
+import bcrypt
+from ..Models import User
 
 class LoginLocal(LoginBaseClass):
     username: str
     password: str
-
-    def perform_login(self) -> bool:
+    user: User = None
+    
+    async def login(self) -> bool:
 
         raise NotImplementedError

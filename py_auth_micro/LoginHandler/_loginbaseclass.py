@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 
+from ..Models import User
 
 class LoginBaseClass(ABC):
     username: str
     password: str
-    ldap_config: str
-
+    user: User = None
+    
     def __init__(self, **kwargs):
-
         for key, value in kwargs.items():
             if key in self.__annotations__.keys():
                 setattr(self, key, value)
@@ -21,5 +21,5 @@ class LoginBaseClass(ABC):
         return f"{self.__class__.__name__}({', '.join(data_list)})"
 
     @abstractmethod
-    def perform_login(self) -> bool:
+    async def login(self) -> bool:
         raise NotImplementedError

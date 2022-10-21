@@ -1,9 +1,12 @@
+from dataclasses import dataclass
+import email
+from tortoise.exceptions import DoesNotExist
+
+from typing import Optional
+
 from ._loginldap import LoginLDAP
 from ._loginkerberos import LoginKerberos
 from ._loginlocal import LoginLocal
-
-from dataclasses import dataclass
-from tortoise.exceptions import DoesNotExist
 
 from ..Config import LDAPConfig
 from ..Models import User
@@ -16,42 +19,47 @@ LOGINHANDLER = {
     AuthSource.KERBEROS: LoginKerberos,
 }
 
+class LoginHandler:
+    async def __new__(
+        self, username: str, password: str, ldap_config: Optional[LDAPConfig] = None
+    ) -> User:
 
-@dataclass
-class SessionFunctions:
-    ldap_config: LDAPConfig
+        possible_user = await self._get_login_type(username, password, ldap_config)
 
-    async def login(self, username: str, password: str) -> bool:
-
-        # get the Authorisation Source for the specified User
-        login_type = await self._get_login_type(username, password)
-
-        # perform the actual Login!
-        successful_login = LOGINHANDLER[login_type](
-            ldap_config=self.ldap_config, username=username, password=password
+        login_handler = LOGINHANDLER[possible_user.auth_type](
+            user=possible_user,
+            ldap_config=ldap_config,
+            username=username,
+            password=password,
         )
+        if not await login_handler.login():
+            raise ValueError("could not log in")
+            
+        return login_handler.user
 
-        return successful_login
-
-    async def _get_login_type(self, username: str, password: str) -> AuthSource:
+    async def _get_login_type(
+        username: str, password: str, ldap_config: Optional[LDAPConfig] = None
+    ) -> User:
         try:
             user = await User.get(username=username)
-            return user.auth_type
+            return user
 
         except DoesNotExist as exc:
             # try LDAP
-            helper = LDAPHelper(self.ldap_config)
-            # if the user can be authenticated with ldap create him in the DB
-            if helper.login(username, password):
-                await User.create(
-                    username=username,
-                    password_hash=None,
-                    activated=True,
-                    auth_type=AuthSource.LDAP,
-                )
-                return AuthSource.LDAP
+            try:
+                helper = LDAPHelper(ldap_config,username,password)
+                # if the user can be authenticated with ldap create him in the DB
+                if helper.login():
+                    user = await User.create(
+                        username=username,
+                        password_hash=None,
+                        activated=True,
+                        auth_type=AuthSource.LDAP,
+                        email = helper.email,
+                    )
+                    return user
+            except Exception:
+                raise DoesNotExist
+
             # if the user cant log in with ldap reraise the exc
             raise exc
-
-    async def logout(self, identity_jwt: str):
-        raise NotImplementedError

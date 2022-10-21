@@ -1,16 +1,21 @@
+from dataclasses import dataclass
 import ldap
 
 from ..Config import LDAPConfig
 
-
+@dataclass
 class LDAPHelper:
 
-    config: LDAPConfig = None
+    config: LDAPConfig
+    username: str
+    password: str 
+    _userinfo: dict
 
-    def __init__(self, config: LDAPConfig):
-        self.config = config
+    @property
+    def email(self):
+        return self._userinfo["email"]
 
-    def authenticate(self, username: str, password: str):
+    def _get_connection(self):
         conn = ldap.initialize(self.config.address)
         conn.protocol_version = 3
         conn.set_option(ldap.OPT_REFERRALS, 0)
@@ -19,31 +24,52 @@ class LDAPHelper:
             conn.set_option(ldap.OPT_X_TLS_CACERTFILE, self.config.ca_file)
             conn.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
 
-        username = f"{self.config.domain}\\{username}"
-        conn.simple_bind_s(username, password)
+        username = f"{self.config.domain}\\{self.username}"
+        conn.simple_bind_s(username, self.password)
         return conn
 
-    def get_ldap_groups(self, username: str, password: str) -> list:
-
-        ldap_c = self.authenticate(username, password)
-        userfilter = f"(&(objectClass=user)(sAMAccountName={username}))"
-        userresults = ldap_c.search_s(
+    def _get_user_info(self):
+        ldap_connection = self._get_connection()
+        userfilter = f"(&(objectClass=user)(sAMAccountName={self.username}))"
+        cn,data = ldap_connection.search_s(
             self.config.base_dn, ldap.SCOPE_SUBTREE, userfilter, None
-        )[0][1]["memberOf"]
+        )[0]
+        groups_raw = data["memberOf"]
         groups = []
-        for group in userresults:
+        for group in groups_raw:
             group = group.decode("utf-8")
             group = group[group.index("CN=") + 3 : group.index(",")]
             groups.append(group)
-        return groups
 
-    def login(self, username: str, password: str) -> bool:
         try:
-            groups = self.get_ldap_groups(username, password)
-            if self.config.group in groups:
-                return True
-            else:
-                return False
-        except Exception as err:
-            print(err)
-            return False
+            mail = data["mail"][0]
+        except IndexError:
+            mail = data["mail"]
+
+        self._userinfo = {
+            "groups":groups,
+            "email": mail.decode("utf-8")
+        }
+
+    def __init__(self,ldap_cfg:LDAPConfig,username:str,password:str):
+        self.config = ldap_cfg
+        self.username = username
+        self.password = password
+
+        self._get_user_info()
+
+    def get_groups(self) -> list:
+        
+        valid_groups = []
+        for group in self._userinfo["groups"]:
+            if group.startswith(self.config.groups_prefix):
+                valid_groups.append(group[len(self.config.groups_prefix):])
+                
+        return valid_groups
+
+    def login(self) -> bool:
+        
+        if self.config.group in self._userinfo["groups"]:
+            return True
+        
+        return False

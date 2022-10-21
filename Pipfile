@@ -8,6 +8,7 @@ tortoise-orm = {extras = ["asyncmy"], version = "*"}
 pyjwt = "*"
 python-ldap = "*"
 cryptography = "*"
+bcrypt = "*"
 
 [dev-packages]
 sphinx-immaterial = "*"

@@ -25,7 +25,6 @@ class Token(Model):
         description="The User which relates to this Token",
     )
     token_id: int = fields.BigIntField(
-        max_length=200,
         unique=True,
         description="ID of the Issued Token",
         pk=True,
