@@ -1,8 +1,6 @@
 from tortoise.exceptions import DoesNotExist
-from typing import Optional
 import bcrypt
 from ..Models import User
-from ..Core import AuthSource
 from ..Exceptions import AlreadyExists
 
 
@@ -39,6 +37,10 @@ async def delete_user(username:str) -> bool:
     return True
 
 async def change_user(username:str,**kwargs) -> User:
-    user = await User.get(username=username)
+    user:User = await User.get(username=username)
 
-    pass
+    for key,value in kwargs.items():
+        if key == "password":
+            pw_salt = bcrypt.gensalt()
+            value = bcrypt.hashpw(value.encode("utf-8"), pw_salt)
+        setattr(user,key,value)

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-import email
 from tortoise.exceptions import DoesNotExist
 
 from typing import Optional
@@ -19,6 +18,7 @@ LOGINHANDLER = {
     AuthSource.KERBEROS: LoginKerberos,
 }
 
+
 class LoginHandler:
     async def __new__(
         self, username: str, password: str, ldap_config: Optional[LDAPConfig] = None
@@ -34,7 +34,7 @@ class LoginHandler:
         )
         if not await login_handler.login():
             raise ValueError("could not log in")
-        
+
         return login_handler.user
 
     async def _get_login_type(
@@ -47,7 +47,7 @@ class LoginHandler:
         except DoesNotExist as exc:
             # try LDAP
             try:
-                helper = LDAPHelper(ldap_config,username,password)
+                helper = LDAPHelper(ldap_config, username, password)
                 # if the user can be authenticated with ldap create him in the DB
                 if helper.login():
                     user = await User.create(
@@ -55,7 +55,7 @@ class LoginHandler:
                         password_hash=None,
                         activated=True,
                         auth_type=AuthSource.LDAP,
-                        email = helper.email,
+                        email=helper.email,
                     )
                     return user
             except Exception:
