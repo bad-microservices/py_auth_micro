@@ -10,10 +10,10 @@ jobs:
           python-version: "3.9"
       - name: Install dependencies
         run: |
-          pip install sphinx-immaterial
+          pip install pipenv
       - name: Sphinx build
         run: |
-          sphinx-build doc _build
+          make doc
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -21,6 +21,6 @@ jobs:
           publish_branch: master
           external_repository: bad-microservices/bad-microservices.github.io
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: _build/
+          publish_dir: _build/html
           destination_dir: py_auth_micro
           force_orphan: true

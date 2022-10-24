@@ -12,7 +12,12 @@ bcrypt = "*"
 
 [dev-packages]
 sphinx-immaterial = "*"
+sphinx-autodoc-typehints = "*"
+sphinx-copybutton = "*"
 black = "*"
+build = "*"
+setuptools = "*"
+twine = "*"
 
 [requires]
 python_version = "3.9"

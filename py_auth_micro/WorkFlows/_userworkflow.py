@@ -50,7 +50,7 @@ class UserWorkflow:
         return usr
 
     async def delete_user(access_token:str, username: str) -> bool:
-
+        
         user = await User.get(username=username)
         await user.delete()
         return True

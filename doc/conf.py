@@ -6,19 +6,68 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'py_auth_micro'
-copyright = '2022, Ole Hannemann'
-author = 'Ole Hannemann'
+project = "py_auth_micro"
+copyright = "2022, Ole Hannemann"
+author = "Ole Hannemann"
+
+import os
+import sys
+import re
+
+sys.path.insert(0, os.path.abspath("."))
+sys.path.insert(0, os.path.abspath(".."))
+
+
+def get_version():
+    versionline = open("../py_auth_micro/_version.py", "rt").read()
+    mob = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", versionline, re.M)
+    if mob:
+        return mob.group(1)
+    else:
+        raise RuntimeError("Unable to find version string")
+
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx_immaterial"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
+    "sphinx_autodoc_typehints",
+    "sphinx.ext.viewcode",
+    "sphinx_copybutton",
+    "sphinx_immaterial",
+]
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+# Todo settings
+todo_include_todos = True
+todo_emit_warnings = True
+
+# Napoleon settings
+napoleon_google_docstring = True
+napoleon_numpy_docstring = False
+napoleon_include_init_with_doc = False
+napoleon_include_private_with_doc = False
+napoleon_include_special_with_doc = True
+napoleon_use_admonition_for_examples = True
+napoleon_use_admonition_for_notes = True
+napoleon_use_admonition_for_references = True
+napoleon_use_ivar = False
+napoleon_use_param = False
+napoleon_use_rtype = True
+
+autodoc_default_options = {
+    "member-order": "bysource",
+}
+
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+
+html_show_sourcelink = True
 
 html_theme = "sphinx_immaterial"
+
 
 # material theme options (see theme.conf for more information)
 html_theme_options = {
@@ -96,5 +145,8 @@ html_theme_options = {
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_immaterial'
-html_static_path = ['_static']
+html_theme = "sphinx_immaterial"
+html_static_path = ["_static"]
+
+# The master toctree document.
+master_doc = "toc"
