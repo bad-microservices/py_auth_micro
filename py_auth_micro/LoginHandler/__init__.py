@@ -20,19 +20,16 @@ LOGINHANDLER = {
 
 
 class LoginHandler:
-    """Helper Class which instantiates a `LoginBaseClass`.
-
-    Attributes:
-        username (str): username of the User we want to log in.
-        password (str): password of the User.
-        ldap_config (LDAPConfig, Optional): Config for LDAP Interactions. Defaults to None.
-    """
+    #TODO: make this class 2 functions...
 
     async def __new__(
-        self, username: str, password: str, ldap_config: Optional[LDAPConfig] = None
+        username: str, password: str, ldap_config: Optional[LDAPConfig] = None
     ) -> User:
+        
 
-        possible_user = await self._get_login_type(username, password, ldap_config)
+        possible_user = await LoginHandler._get_login_type(
+            username, password, ldap_config
+        )
 
         login_handler = LOGINHANDLER[possible_user.auth_type](
             user=possible_user,
@@ -45,6 +42,7 @@ class LoginHandler:
 
         return login_handler.user
 
+    @staticmethod
     async def _get_login_type(
         username: str, password: str, ldap_config: Optional[LDAPConfig] = None
     ) -> User:
@@ -72,4 +70,5 @@ class LoginHandler:
             # if the user cant log in with ldap reraise the exc
             raise exc
 
-__all__ = ["LoginBaseClass","LoginHandler","LoginLDAP","LoginLocal","LoginKerberos"]
+
+__all__ = ["LoginBaseClass", "LoginHandler", "LoginLDAP", "LoginLocal", "LoginKerberos"]
