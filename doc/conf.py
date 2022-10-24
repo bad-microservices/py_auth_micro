@@ -17,16 +17,6 @@ import re
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath(".."))
 
-
-def get_version():
-    versionline = open("../py_auth_micro/_version.py", "rt").read()
-    mob = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", versionline, re.M)
-    if mob:
-        return mob.group(1)
-    else:
-        raise RuntimeError("Unable to find version string")
-
-
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
@@ -63,6 +53,11 @@ autodoc_default_options = {
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+
+
+# -- Options for HTML output -------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+
 
 html_show_sourcelink = True
 
@@ -142,10 +137,7 @@ html_theme_options = {
     # END: social icons
 }
 
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "sphinx_immaterial"
 html_static_path = ["_static"]
 
 # The master toctree document.
