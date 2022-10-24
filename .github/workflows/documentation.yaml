@@ -23,4 +23,4 @@ jobs:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: _build/html
           destination_dir: py_auth_micro
-          force_orphan: true
+          keep_files: true
