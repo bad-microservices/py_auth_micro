@@ -4,9 +4,9 @@ from typing import Optional
 import jwt
 import datetime
 
-from ..Core import SignMethod
-from ..Config import TokenConfig
+from jwt_helper import SignMethod, JWTEncoder, JWTValidator
 
+from ..Config import AppConfig
 
 class Token(Model):
     """Databse Entity Holding Information around issued Identity Tokens
@@ -57,45 +57,40 @@ Valid Options>
         max_length=100, default="test", description="The Vhost for this Token"
     )
 
-    async def get_id_jwt(self, token_config: TokenConfig):
+    async def get_id_jwt(self, jwt_encoder: JWTEncoder,app_cfg: AppConfig) -> str:
 
         usergroups = await self.user.groups.all().values_list("name", flat=True)
 
-        return jwt.encode(
-            {"groups": usergroups, "username": str(self.user)},
-            token_config.encode_secret(self.sign_method),
-            headers={
+        token = jwt_encoder.create_jwt({
                 "kid": str(self.token_id),
-                "iss": token_config.issuer,
-                "iat": datetime.datetime.now().timestamp(),
-                "exp": self.valid_until.timestamp(),
                 "aud": self.ip,
                 "vhost": self.vhost,
-                "type": "ID-Token"
-            },
-            algorithm=self.sign_method.value,
-        )
+                "type": "ID-Token",
+            },{"groups": usergroups, "username": str(self.user)},app_cfg.id_token_valid_time)
+        
+        return token
 
     @staticmethod
     async def verify_id_jwt(
-        token_config: TokenConfig,
+        jwt_validator: JWTValidator,
         id_jwt: str,
         ip: Optional[str] = None,
-        check_issuer: bool = False,
     ):
 
-        # read header before verifying it
-        token_header = jwt.get_unverified_header(id_jwt)
+        if not jwt_validator.check_token(id_jwt):
+            raise ValueError("invalid ID-JWT")
+
+        
+
+        if token_header["type"] != "ID-Token":
+            raise ValueError("not an ID-Token")
 
         # get token with matching token id from DB so we can compare...
         token = await Token.get(token_id=int(token_header["kid"]))
 
-        # check issuer if we care for it
-        if check_issuer and token_header["iss"] != token_config.issuer:
-            raise ValueError("issuer mismatch")
 
-        if token_header["type"] != "ID-Token":
-            raise ValueError("not an ID-Token")
+
+        
 
         # if and ip got specified check it
         if ip is not None and (
@@ -144,7 +139,7 @@ Valid Options>
                 "iat": datetime.datetime.now().timestamp(),
                 "aud": usergroups,
                 "Type": "Access-Token",
-                "vhost": self.vhost
+                "vhost": self.vhost,
             },
             algorithm=self.sign_method.value,
         )
