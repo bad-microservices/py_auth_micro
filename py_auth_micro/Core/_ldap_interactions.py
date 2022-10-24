@@ -1,5 +1,8 @@
 from dataclasses import dataclass
-import ldap
+try:
+    import ldap
+except ImportError:
+    print("cant import python-ldap\nldap connection wont work")
 
 from ..Config import LDAPConfig
 
