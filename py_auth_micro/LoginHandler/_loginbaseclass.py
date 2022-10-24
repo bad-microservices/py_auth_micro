@@ -2,16 +2,16 @@ from abc import ABC, abstractmethod
 
 from ..Models import User
 
+
 class LoginBaseClass(ABC):
     username: str
     password: str
     user: User = None
-    
+
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             if key in self.__annotations__.keys():
                 setattr(self, key, value)
-        pass
 
     def __repr__(self):
         data_list = []

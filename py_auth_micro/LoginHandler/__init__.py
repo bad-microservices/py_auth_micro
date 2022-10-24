@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from tortoise.exceptions import DoesNotExist
 
 from typing import Optional

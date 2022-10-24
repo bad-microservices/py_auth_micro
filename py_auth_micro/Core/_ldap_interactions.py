@@ -3,12 +3,13 @@ import ldap
 
 from ..Config import LDAPConfig
 
+
 @dataclass
 class LDAPHelper:
 
     config: LDAPConfig
     username: str
-    password: str 
+    password: str
     _userinfo: dict
 
     @property
@@ -31,7 +32,7 @@ class LDAPHelper:
     def _get_user_info(self):
         ldap_connection = self._get_connection()
         userfilter = f"(&(objectClass=user)(sAMAccountName={self.username}))"
-        cn,data = ldap_connection.search_s(
+        _, data = ldap_connection.search_s(
             self.config.base_dn, ldap.SCOPE_SUBTREE, userfilter, None
         )[0]
         groups_raw = data["memberOf"]
@@ -46,12 +47,9 @@ class LDAPHelper:
         except IndexError:
             mail = data["mail"]
 
-        self._userinfo = {
-            "groups":groups,
-            "email": mail.decode("utf-8")
-        }
+        self._userinfo = {"groups": groups, "email": mail.decode("utf-8")}
 
-    def __init__(self,ldap_cfg:LDAPConfig,username:str,password:str):
+    def __init__(self, ldap_cfg: LDAPConfig, username: str, password: str):
         self.config = ldap_cfg
         self.username = username
         self.password = password
@@ -59,17 +57,17 @@ class LDAPHelper:
         self._get_user_info()
 
     def get_groups(self) -> list:
-        
+
         valid_groups = []
         for group in self._userinfo["groups"]:
             if group.startswith(self.config.groups_prefix):
-                valid_groups.append(group[len(self.config.groups_prefix):])
-                
+                valid_groups.append(group[len(self.config.groups_prefix) :])
+
         return valid_groups
 
     def login(self) -> bool:
-        
+
         if self.config.group in self._userinfo["groups"]:
             return True
-        
+
         return False

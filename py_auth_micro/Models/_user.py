@@ -5,8 +5,6 @@ from typing import Optional
 from tortoise import fields
 from tortoise.models import Model
 from tortoise.validators import (
-    MinLengthValidator,
-    MaxLengthValidator,
     RegexValidator,
     validate_ipv46_address,
 )
@@ -42,14 +40,15 @@ Valid Options:
         unique=True,
         description="Email address for the user",
         validators=[
-            #we split the regex onto multiple line for better readability
+            # we split the regex onto multiple line for better readability
             RegexValidator(
                 (
-                "[a-z0-9.!#$%&'*+\/=?^_`{|}~-]"
-                "+@[a-z0-9](?:[a-z0-9-]"
-                "{0,61}[a-z0-9])?(?:\.[a-z0-9]"
-                "(?:[a-z0-9-]{0,61}[a-z0-9])?)"
-                ),re.I
+                    "[a-z0-9.!#$%&'*+\/=?^_`{|}~-]"
+                    "+@[a-z0-9](?:[a-z0-9-]"
+                    "{0,61}[a-z0-9])?(?:\.[a-z0-9]"
+                    "(?:[a-z0-9-]{0,61}[a-z0-9])?)"
+                ),
+                re.I,
             )
         ],
     )
