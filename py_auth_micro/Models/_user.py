@@ -4,19 +4,17 @@ import datetime
 from typing import Optional
 from tortoise import fields
 from tortoise.models import Model
+from jwt_helper import JWTEncoder
 
 from ..Core import AuthSource
-from ..Config import TokenConfig
+from ..Config import AppConfig
 from ._token import Token
 
 
 class User(Model):
 
     username: str = fields.CharField(
-        max_length=30,
-        unique=True,
-        pk=True,
-        description="Username"
+        max_length=30, unique=True, pk=True, description="Username"
     )
     password_hash: bytes = fields.BinaryField(
         description="Hash of the password (if local user)", null=True
@@ -24,13 +22,13 @@ class User(Model):
     auth_type: AuthSource = fields.CharEnumField(
         AuthSource,
         default=AuthSource.LOCAL,
-        description= (
-                    "What Kind of Authentification should be used for the User"
-                    "Valid Options:"
-                    " - LOCAL"
-                    " - LDAP"
-                    " - KERBEROS"
-                    )
+        description=(
+            "What Kind of Authentification should be used for the User"
+            "Valid Options:"
+            " - LOCAL"
+            " - LDAP"
+            " - KERBEROS"
+        ),
     )
     email: str = fields.CharField(
         max_length=100,
@@ -63,7 +61,11 @@ class User(Model):
     token: fields.ReverseRelation[Token]
 
     async def create_id_token(
-        self, token_config: TokenConfig, vhost: str = "/", ip: Optional[str] = None
+        self,
+        jwt_encoder: JWTEncoder,
+        app_config: AppConfig,
+        vhost: str = "/",
+        ip: Optional[str] = None,
     ) -> "Token":
         # check if old Token exists
         token = await Token.get_or_none(user=self.username)
@@ -74,12 +76,12 @@ class User(Model):
 
         valid_until = datetime.datetime.now(
             tz=datetime.timezone.utc
-        ) + datetime.timedelta(hours=token_config.valid_hours)
+        ) + datetime.timedelta(minutes=app_config.id_token_valid_time)
 
         token = await Token.create(
             user=self,
             ip=ip,
-            sign_method=token_config.default_sign_method,
+            sign_method=jwt_encoder.default_sign_method,
             vhost=vhost,
             valid_until=valid_until,
         )

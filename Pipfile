@@ -5,10 +5,8 @@ name = "pypi"
 
 [packages]
 tortoise-orm = {extras = ["asyncmy"], version = "*"}
-pyjwt = "*"
-cryptography = "*"
 bcrypt = "*"
-jwt_helper = "*"
+jwt_helper = "==0.0.2"
 
 [dev-packages]
 sphinx-immaterial = "*"

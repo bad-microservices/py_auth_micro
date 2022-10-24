@@ -2,6 +2,7 @@ from tortoise.exceptions import DoesNotExist
 
 from typing import Optional
 
+from ._loginbaseclass import LoginBaseClass
 from ._loginldap import LoginLDAP
 from ._loginkerberos import LoginKerberos
 from ._loginlocal import LoginLocal
@@ -19,6 +20,14 @@ LOGINHANDLER = {
 
 
 class LoginHandler:
+    """Helper Class which instantiates a `LoginBaseClass`.
+
+    Attributes:
+        username (str): username of the User we want to log in.
+        password (str): password of the User.
+        ldap_config (LDAPConfig, Optional): Config for LDAP Interactions. Defaults to None.
+    """
+
     async def __new__(
         self, username: str, password: str, ldap_config: Optional[LDAPConfig] = None
     ) -> User:
@@ -62,3 +71,5 @@ class LoginHandler:
 
             # if the user cant log in with ldap reraise the exc
             raise exc
+
+__all__ = ["LoginBaseClass","LoginHandler","LoginLDAP","LoginLocal","LoginKerberos"]

@@ -4,6 +4,16 @@ from ..Models import User
 
 
 class LoginBaseClass(ABC):
+    """Abstract Baseclass for Authenticating Users
+
+    This Is an abstract baseclass describing all functions needed to be implemented by a generic LoginHandler.
+
+    Attributes:
+        username (str): Username we want to authenticate.
+        password (str): password for that specified user.
+        user (User): Database instance of that user.
+
+    """
     username: str
     password: str
     user: User = None

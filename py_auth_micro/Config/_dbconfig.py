@@ -26,7 +26,6 @@ class DBConfig:
 
     @property
     def connection_string(self):
-        """This Property does not support ssl!"""
         return f"mysql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
 
     def to_dict(self, connection_name: str = "default") -> dict:

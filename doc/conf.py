@@ -141,4 +141,4 @@ html_theme_options = {
 html_static_path = ["_static"]
 
 # The master toctree document.
-#master_doc = "toc"
+master_doc = "toc"

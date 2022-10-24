@@ -11,7 +11,7 @@ docdeps:
 	pipenv install --dev
 
 doc: docdeps
-	rm -fR ./build
+	rm -fR ./_build
 	pipenv run sphinx-build -M html doc _build
 
 package:
