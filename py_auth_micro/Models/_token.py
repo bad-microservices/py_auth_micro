@@ -62,7 +62,7 @@ Valid Options>
         usergroups = await self.user.groups.all().values_list("name", flat=True)
 
         return jwt.encode(
-            {"groups": usergroups, "ip": self.ip, "username": str(self.user)},
+            {"groups": usergroups, "username": str(self.user)},
             token_config.encode_secret(self.sign_method),
             headers={
                 "kid": str(self.token_id),
@@ -71,6 +71,7 @@ Valid Options>
                 "exp": self.valid_until.timestamp(),
                 "aud": self.ip,
                 "vhost": self.vhost,
+                "type": "ID-Token"
             },
             algorithm=self.sign_method.value,
         )
@@ -93,9 +94,12 @@ Valid Options>
         if check_issuer and token_header["iss"] != token_config.issuer:
             raise ValueError("issuer mismatch")
 
+        if token_header["type"] != "ID-Token":
+            raise ValueError("not an ID-Token")
+
         # if and ip got specified check it
         if ip is not None and (
-            token_header["aud"] != ip or token.ip != token_header["aud"]
+            token_header["aud"] != ip or token_header["aud"] != token.ip
         ):
             raise ValueError("Token IP mismatch!")
 
@@ -132,12 +136,15 @@ Valid Options>
         )
 
         return jwt.encode(
-            {"groups": usergroups, "user": str(await self.user), "vhost": self.vhost},
+            {"user": str(await self.user)},
             token_config.encode_secret(token_config.default_sign_method),
             headers={
                 "iss": token_config.issuer,
                 "exp": valid_until.timestamp(),
                 "iat": datetime.datetime.now().timestamp(),
+                "aud": usergroups,
+                "Type": "Access-Token",
+                "vhost": self.vhost
             },
             algorithm=self.sign_method.value,
         )

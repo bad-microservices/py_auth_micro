@@ -2,4 +2,4 @@ from ._group import Group
 from ._token import Token
 from ._user import User
 
-__models__ = ["Token", "User", "Group"]
+__models__ = [Token, User, Group]

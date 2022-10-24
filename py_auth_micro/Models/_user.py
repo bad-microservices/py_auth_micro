@@ -4,10 +4,6 @@ import datetime
 from typing import Optional
 from tortoise import fields
 from tortoise.models import Model
-from tortoise.validators import (
-    RegexValidator,
-    validate_ipv46_address,
-)
 
 from ..Core import AuthSource
 from ..Config import TokenConfig
@@ -20,8 +16,7 @@ class User(Model):
         max_length=30,
         unique=True,
         pk=True,
-        description="Username",
-        validators=[RegexValidator("[a-z-_0-9]{4,30}", re.I)],
+        description="Username"
     )
     password_hash: bytes = fields.BinaryField(
         description="Hash of the password (if local user)", null=True
@@ -29,28 +24,18 @@ class User(Model):
     auth_type: AuthSource = fields.CharEnumField(
         AuthSource,
         default=AuthSource.LOCAL,
-        description="""What Kind of Authentification should be used for the User
-Valid Options:
- - LOCAL
- - LDAP
- - KERBEROS""",
+        description= (
+                    "What Kind of Authentification should be used for the User"
+                    "Valid Options:"
+                    " - LOCAL"
+                    " - LDAP"
+                    " - KERBEROS"
+                    )
     )
     email: str = fields.CharField(
         max_length=100,
         unique=True,
         description="Email address for the user",
-        validators=[
-            # we split the regex onto multiple line for better readability
-            RegexValidator(
-                (
-                    "[a-z0-9.!#$%&'*+\/=?^_`{|}~-]"
-                    "+@[a-z0-9](?:[a-z0-9-]"
-                    "{0,61}[a-z0-9])?(?:\.[a-z0-9]"
-                    "(?:[a-z0-9-]{0,61}[a-z0-9])?)"
-                ),
-                re.I,
-            )
-        ],
     )
     activated: bool = fields.BooleanField(
         description="0: User did not verify his Email\n1: User verified his Email"
