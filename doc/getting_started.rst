@@ -24,14 +24,14 @@ py_auth_micro is available from PyPi and can be installed with `pip` from there.
 
 .. code-block:: bash
 
-    python3 -m pip install py_auth_micro
+    python3 -m pip install py-auth-micro
 
 
 with python-ldap
 
 .. code-block:: bash
 
-    python3 -m pip install py_auth_micro python-ldap
+    python3 -m pip install py-auth-micro python-ldap
 
 
 From Source
