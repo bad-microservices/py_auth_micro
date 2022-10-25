@@ -1,6 +1,6 @@
 from jwt_helper import JWTEncoder, JWTValidator
 
-from ..LoginHandler import LoginHandler
+from ..LoginHandler import login
 
 from ..Models import User, Token
 from ..Config import AppConfig, LDAPConfig
@@ -15,7 +15,7 @@ class SessionWorkflow:
     async def login(
         self, username: str, password: str, vhost: str = "test", ip: str = "*"
     ) -> str:
-        user: User = await LoginHandler(username, password, self.ldap_cfg)
+        user: User = await login(username, password, self.ldap_cfg)
         return await user.create_id_token(self.jwt_encoder, self.app_cfg, vhost, ip)
 
     async def logout(self, id_token: str, ip: str = "*") -> bool:

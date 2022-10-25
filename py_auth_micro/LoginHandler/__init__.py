@@ -19,56 +19,63 @@ LOGINHANDLER = {
 }
 
 
-class LoginHandler:
-    #TODO: make this class 2 functions...
+async def login(
+    username: str, password: str, ldap_config: Optional[LDAPConfig] = None
+) -> User:
+    """Function which logs a user in with specified Credentials.
 
-    async def __new__(
-        username: str, password: str, ldap_config: Optional[LDAPConfig] = None
-    ) -> User:
-        
+    Args:
+        username (str): Username of the User
+        password (str): Password of the User
+        ldap_config (LDAPConfig, optional): Configuration for LDAPAuth. Defaults to None.
 
-        possible_user = await LoginHandler._get_login_type(
-            username, password, ldap_config
-        )
+    Raises:
+        ValueError: If the Credentials are wrong
 
-        login_handler = LOGINHANDLER[possible_user.auth_type](
-            user=possible_user,
-            ldap_config=ldap_config,
-            username=username,
-            password=password,
-        )
-        if not await login_handler.login():
-            raise ValueError("could not log in")
+    Returns:
+        User: the User mathcing the credentials
+    """
 
-        return login_handler.user
+    possible_user = await _get_login_type(username, password, ldap_config)
 
-    @staticmethod
-    async def _get_login_type(
-        username: str, password: str, ldap_config: Optional[LDAPConfig] = None
-    ) -> User:
+    login_handler = LOGINHANDLER[possible_user.auth_type](
+        user=possible_user,
+        ldap_config=ldap_config,
+        username=username,
+        password=password,
+    )
+    if not await login_handler.login():
+        raise ValueError("could not log in")
+
+    return login_handler.user
+
+
+async def _get_login_type(
+    username: str, password: str, ldap_config: Optional[LDAPConfig] = None
+) -> User:
+    try:
+        user = await User.get(username=username)
+        return user
+
+    except DoesNotExist as exc:
+        # try LDAP
         try:
-            user = await User.get(username=username)
-            return user
+            helper = LDAPHelper(ldap_config, username, password)
+            # if the user can be authenticated with ldap create him in the DB
+            if helper.login():
+                user = await User.create(
+                    username=username,
+                    password_hash=None,
+                    activated=True,
+                    auth_type=AuthSource.LDAP,
+                    email=helper.email,
+                )
+                return user
+        except Exception:
+            raise DoesNotExist
 
-        except DoesNotExist as exc:
-            # try LDAP
-            try:
-                helper = LDAPHelper(ldap_config, username, password)
-                # if the user can be authenticated with ldap create him in the DB
-                if helper.login():
-                    user = await User.create(
-                        username=username,
-                        password_hash=None,
-                        activated=True,
-                        auth_type=AuthSource.LDAP,
-                        email=helper.email,
-                    )
-                    return user
-            except Exception:
-                raise DoesNotExist
-
-            # if the user cant log in with ldap reraise the exc
-            raise exc
+        # if the user cant log in with ldap reraise the exc
+        raise exc
 
 
-__all__ = ["LoginBaseClass", "LoginHandler", "LoginLDAP", "LoginLocal", "LoginKerberos"]
+__all__ = ["login", "LoginBaseClass", "LoginLDAP", "LoginLocal", "LoginKerberos"]
