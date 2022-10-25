@@ -12,6 +12,15 @@ from ._token import Token
 
 
 class User(Model):
+    """Model Representing a User
+
+    Attributes:
+        username (str): Name of the User.
+        password_hash (str, optional): Passwordhash for local Users
+        auth_type (AuthSource): How to authenticate the User.
+        email (str): Email address of the User.
+        activated (bool): User verified his email Address.
+    """
 
     username: str = fields.CharField(
         max_length=30, unique=True, pk=True, description="Username"
@@ -65,8 +74,19 @@ class User(Model):
         jwt_encoder: JWTEncoder,
         app_config: AppConfig,
         vhost: str = "/",
-        ip: Optional[str] = None,
-    ) -> "Token":
+        ip: Optional[str] = "*",
+    ) -> Token:
+        """Creates a Token instance.
+
+        Args:
+            jwt_encoder (JWTEncoder): JWTEncoder instance which specifies the SigingMethod.
+            app_config (AppConfig): AppConfig specifying the Lifetime of the Token.
+            vhost (str, optional): For which VHost the Token is valid for. Defaults to "/".
+            ip (str, optional): IP which the Token is bound to. Defaults to `*`.
+
+        Returns:
+            Token: _description_
+        """
         # check if old Token exists
         token = await Token.get_or_none(user=self.username)
 
@@ -81,7 +101,7 @@ class User(Model):
         token = await Token.create(
             user=self,
             ip=ip,
-            sign_method=jwt_encoder.default_sign_method,
+            sign_method=jwt_encoder.signmethod,
             vhost=vhost,
             valid_until=valid_until,
         )
@@ -89,6 +109,11 @@ class User(Model):
         return token
 
     async def revoke_id_token(self) -> bool:
+        """Revokes the ID-Token by deleting the Database Entity Representing it.
+
+        Returns:
+            bool: The Token got revoked.
+        """
         if self.token is not None:
             await self.token.delete()
         return True

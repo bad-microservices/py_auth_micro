@@ -6,8 +6,13 @@ Requirements
 
 * python3.6+
 * python modules
-    * cryptography
-    * pyjwt
+    * jwt_helper
+    * tortoise-orm[asyncmy]
+    * bcrypt
+* Optional
+    * python-ldap
+
+The Optional python-ldap Dependency is only needed if you want to use an LDAP/AD-Server as upstream Identity Provider.
 
 Installation
 --------------
@@ -20,6 +25,13 @@ py_auth_micro is available from PyPi and can be installed with `pip` from there.
 .. code-block:: bash
 
     python3 -m pip install py_auth_micro
+
+
+with python-ldap
+
+.. code-block:: bash
+
+    python3 -m pip install py_auth_micro python-ldap
 
 
 From Source
@@ -37,9 +49,14 @@ From Source
 
     cd py_auth_micro
 
-#. install vie pip
+#. install via pip
 
 .. code-block:: bash
 
     python3 -m pip install .
 
+(OPTIONAL) install python-ldap
+
+.. code-block:: bash
+
+    python3 -m pip install python-ldap

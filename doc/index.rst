@@ -3,18 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to py_auth_micro's documentation!
-=========================================
+General
+=============================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+`py_auth_micro` is a small identity provider library which can use an LDAP/AD as upstream Identity Provider and can also store Users Localy.
 
+The Authentication and Authorization is done via `ID-Tokens` and `Access-Tokens`. The `ID-Tokens` are given out after a User successfully logged in.
+With this `ID-Token` a User can request an `Access-Token` which he can send to other (Micro-)Services to gain access According to his Permissions.
 
+The Tokens are `JWT` Tokens which can either be signed with an symetric `HMAC`-Secret or with an `RSA`-Key.
 
-Indices and tables
-==================
+   
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   

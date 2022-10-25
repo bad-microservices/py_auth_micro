@@ -1,11 +1,13 @@
-models.py.back
 Pipfile.lock
-test.py
 __pycache__
-_build
 _static
 .doctrees
 .vscode/settings.json
 
-test2.py
-clear_db.sql
+/_build
+/dist
+/*.pem
+/*.pub
+/*.key
+/test*.py
+/*.sql

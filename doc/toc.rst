@@ -6,6 +6,7 @@ Content
    :includehidden:
 
    index
+   genindex
    getting_started
    api_reference
    examples
