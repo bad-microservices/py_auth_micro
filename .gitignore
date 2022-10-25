@@ -11,3 +11,4 @@ _static
 /*.key
 /test*.py
 /*.sql
+/py_auth_micro.egg-info
