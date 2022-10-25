@@ -6,15 +6,19 @@ help:
 	@echo "Targets:"
 	@echo "    - doc       Build the documentation"
 	@echo "    - package   Build jwt_helper as package"
+	@echo "    - deps      Installs needed Dependencies"
+	@echo "    - devdeps   Installs needed Dependencies for development"
 
-docdeps:
+deps:
+	pipenv install
+
+devdeps:
 	pipenv install --dev
 
-doc: docdeps
+doc: devdeps
 	rm -fR ./_build
 	pipenv run sphinx-build -M html doc _build
 
-package:
-	pipenv install
+package: devdeps
 	rm -fR dist/
 	pipenv run python -m build
