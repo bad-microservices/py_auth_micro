@@ -13,7 +13,7 @@ class DBConfig:
         user (str): Username for the Database connection.
         host (str, optional): IP or DNS Hostname of the Database Server. Defaults to "127.0.0.1".
         port (int, optional): Port of the Database Server. Defaults to 3306.
-        sslcontext (ssl.SSLContext, optional): SSLContext for the Connetion. Defaults to None.
+        ca_file (str, optional): Path to an ca file. If specified it will create an ssl context. Defaults to None.
         connection_string (str): Connectionstring for tortoise ORM using the specified Values
     """
 
@@ -22,7 +22,15 @@ class DBConfig:
     password: str
     host: str = "127.0.0.1"
     port: int = 3306
-    sslcontext: ssl.SSLContext = None
+    ca_file: str = None
+
+    @property
+    def sslcontext(self):
+        if self.ca_file is None:
+            return None
+        
+        return ssl.create_default_context(cafile=self.ca_file)
+
 
     @property
     def connection_string(self):
