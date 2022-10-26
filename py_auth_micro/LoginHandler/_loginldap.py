@@ -1,4 +1,5 @@
 import ldap
+import logging
 
 from ._loginbaseclass import LoginBaseClass
 from ..Config import LDAPConfig
@@ -9,7 +10,7 @@ from ..Models import User, Group
 class LoginLDAP(LoginBaseClass):
     """Login Provider for LDAP/AD Users
 
-    Attributes:
+    Keyword Arguments:
         ldap_config (LDAPConfig): configuration which are important for interacting with the LDAP.
         username (str): Username we want to authenticate.
         password (str): password for that specified user.
@@ -25,19 +26,24 @@ class LoginLDAP(LoginBaseClass):
         """Checks User Credentials against the LDAP/AD.
 
         Note:
-            calls `self._sync_groups` to sync the LDAP/AD Group memberships of the User with the Database.
+            calls :code:`self._sync_groups` to sync the LDAP/AD Group memberships of the User with the Database.
 
         Returns:
             bool: Successfull Login
         """
+        logger = logging.getLogger(__name__)
+        logger.debug(f"tyring to login {self.username} via LDAP")
+
         try:
             ldaphelper = LDAPHelper(self.ldap_config, self.username, self.password)
         except ldap.INVALID_CREDENTIALS:
+            logger.debug(f"invalid credentials for {self.username}")
             return False
 
         if ldaphelper.login():
             await self._sync_groups(ldaphelper)
             return True
+        logger.debug(f"User '{self.username}' is not allowed to log in via LDAP")
         return False
 
     async def _sync_groups(self, ldap_helper: LDAPHelper) -> None:
@@ -49,6 +55,8 @@ class LoginLDAP(LoginBaseClass):
         Args:
             ldap_helper (LDAPHelper): LDAPHelper class instance to interact with the ldap
         """
+        logger = logging.getLogger(__name__)
+        logger.debug(f"syncing groups with LDAP for {self.username}")
         ldap_groups = ldap_helper.get_groups()
         db_groups = await self.user.groups.all().values_list("name", flat=True)
 
@@ -61,6 +69,9 @@ class LoginLDAP(LoginBaseClass):
             if removed_group not in ldap_groups
         ]
 
+        logger.debug(f"User '{self.username}' will get removed from {rm_groups}")
+        logger.debug(f"User '{self.username}' will be added to {add_groups}")
+
         # add user to group he should be in
         for add_group in add_groups:
             tmpgr, _ = await Group.get_or_create({"name": add_group}, name=add_group)
@@ -70,3 +81,5 @@ class LoginLDAP(LoginBaseClass):
         for rm_group in rm_groups:
             tmp_gr = await Group.get(name=rm_group)
             await self.user.groups.remove(tmp_gr)
+
+        logger.debug(f"synced groups for User '{self.username}'")

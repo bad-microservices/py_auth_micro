@@ -9,6 +9,16 @@ from ..Config import LDAPConfig
 
 @dataclass
 class LDAPHelper:
+    """A class which helps interacting with an LDAP Server
+
+    Warning:
+        While instantiating this class it will bin against the LDAP!
+
+    Attributes:
+        config (LDAPConfig): The Configuration to connect to the LDAP.
+        username (str): Name of the User we want to log in with.
+        password (str): Password of the user.
+    """
 
     config: LDAPConfig
     username: str
@@ -17,6 +27,8 @@ class LDAPHelper:
 
     @property
     def email(self):
+        """Extracts the Users email after he sucessfully logged in (if he needs to be created in the Database)
+        """
         return self._userinfo["email"]
 
     def _get_connection(self):
@@ -60,7 +72,11 @@ class LDAPHelper:
         self._get_user_info()
 
     def get_groups(self) -> list:
+        """This function will return a list of all relevant Groups.
 
+        Returns:
+            list: List of Usergroups
+        """
         valid_groups = []
         for group in self._userinfo["groups"]:
             if group.startswith(self.config.groups_prefix):
@@ -69,6 +85,11 @@ class LDAPHelper:
         return valid_groups
 
     def login(self) -> bool:
+        """This Function checks if the User has the correct Usergroup to sign in.
+
+        Returns:
+            bool: True if the user is allowed to.
+        """
 
         if self.config.group in self._userinfo["groups"]:
             return True

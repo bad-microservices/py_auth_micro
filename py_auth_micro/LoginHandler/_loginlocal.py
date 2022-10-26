@@ -1,6 +1,8 @@
-from ._loginbaseclass import LoginBaseClass
 import bcrypt
+import logging
+
 from ..Models import User
+from ._loginbaseclass import LoginBaseClass
 
 
 class LoginLocal(LoginBaseClass):
@@ -14,6 +16,7 @@ class LoginLocal(LoginBaseClass):
     Returns:
         _type_: _description_
     """
+
     username: str
     password: str
     user: User = None
@@ -22,12 +25,18 @@ class LoginLocal(LoginBaseClass):
         """Hashes the users password and compares it against the Database.
 
         Note:
-            Uses the `bcrypt` Module
+            Uses the :code:`bcrypt` Module
 
         Returns:
             bool: Successfull Login
         """
+        logger = logging.getLogger(__name__)
+        logger.debug(f"tyring to login {self.username} Localy")
 
         pw_hash = self.user.password_hash
 
-        return bcrypt.checkpw(self.password.encode("utf-8"), pw_hash)
+        pw_matches = bcrypt.checkpw(self.password.encode("utf-8"), pw_hash)
+
+        logger.debug(f"PW matches for User '{self.username}': {pw_matches}")
+
+        return pw_matches

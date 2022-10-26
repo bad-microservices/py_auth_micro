@@ -14,7 +14,6 @@ class DBConfig:
         host (str, optional): IP or DNS Hostname of the Database Server. Defaults to "127.0.0.1".
         port (int, optional): Port of the Database Server. Defaults to 3306.
         ca_file (str, optional): Path to an ca file. If specified it will create an ssl context. Defaults to None.
-        connection_string (str): Connectionstring for tortoise ORM using the specified Values
     """
 
     database: str
@@ -26,14 +25,15 @@ class DBConfig:
 
     @property
     def sslcontext(self):
+        """if a ca_file is specified this is an :code:`SSLContext` else it is None"""
         if self.ca_file is None:
             return None
-        
-        return ssl.create_default_context(cafile=self.ca_file)
 
+        return ssl.create_default_context(cafile=self.ca_file)
 
     @property
     def connection_string(self):
+        """str: Connectionstring for tortoise ORM using the specified Values"""
         return f"mysql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
 
     def to_dict(self, connection_name: str = "default") -> dict:
