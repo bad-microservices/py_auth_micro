@@ -31,7 +31,7 @@ class GroupWorkflow:
             PermissionError: User Requesting the Action is not and Administrator.
 
         Returns:
-            Optional[Group]: If the Group return it, if not return None
+            Optional[Group]: If the Group exists return it. None if it does not exist.
         """       
         _, is_admin = _get_info_from_token(
             self.jwt_validator, self.app_cfg, access_token
@@ -43,11 +43,11 @@ class GroupWorkflow:
         group = await Group.get_or_none(name=group_name)
 
         if group is None:
-            return False
+            return None
 
-        return True
+        return group
 
-    async def create_group(self, access_token: str, group_name: str) -> bool:
+    async def create_group(self, access_token: str, group_name: str) -> dict:
         """Creates a Group with the specified Name
 
         Args:
@@ -67,11 +67,11 @@ class GroupWorkflow:
         try:
             await Group.create(name=group_name)
         except Exception:
-            return False
+            return {"success":False}
 
-        return True
+        return {"success":True}
 
-    async def delete_group(self, access_token: str, group_name: str) -> bool:
+    async def delete_group(self, access_token: str, group_name: str) -> dict:
         """Deletes the specified Group.
 
         Args:
@@ -93,13 +93,13 @@ class GroupWorkflow:
         try:
             await group.delete()
         except Exception:
-            return False
+            return {"success":False}
 
-        return True
+        return {"success":True}
 
     async def add_user_to_group(
         self, access_token: str, group_name: str, user_name: str
-    ) -> bool:
+    ) -> dict:
         """Adds a User to a group
 
         Args:
@@ -125,13 +125,13 @@ class GroupWorkflow:
         try:
             await group.users.add(user)
         except Exception:
-            return False
+            return {"success":False}
 
-        return True
+        return {"success":True}
 
     async def remove_user_from_group(
         self, access_token: str, group_name: str, user_name: str
-    ) -> bool:
+    ) -> dict:
         """Removes a User from a group
 
         Args:
@@ -157,6 +157,6 @@ class GroupWorkflow:
         try:
             await group.users.remove(user)
         except Exception:
-            return False
+            return {"success":False}
 
-        return True
+        return {"success":True}

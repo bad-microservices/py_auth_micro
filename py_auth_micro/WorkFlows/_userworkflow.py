@@ -26,7 +26,7 @@ class UserWorkflow:
     jwt_validator: JWTValidator
     app_cfg: AppConfig
 
-    async def get_all(self, access_token: str) -> list[str]:
+    async def get_all(self, access_token: str) -> dict[str, list[str]]:
         """Returns a list of all Usernames.
 
         Args:
@@ -43,7 +43,7 @@ class UserWorkflow:
 
         users = await User.all().values_list("username", flat=True)
 
-        return users
+        return {"users": users}
 
     async def _create_user(
         self, username: str, password: str, email: str, activated: bool = False
@@ -101,7 +101,7 @@ class UserWorkflow:
         password: str,
         password_confirm: str,
         email: str,
-    ) -> bool:
+    ) -> dict:
         """This Function is for User Registration
 
         Args:
@@ -114,15 +114,17 @@ class UserWorkflow:
             ValueError: some Values do not match the specified Regexes or the password confirmation does not match the Password.
 
         Returns:
-            bool: True if User was created successfully
+            dict: :code:`{"success":True}` if operation was successfull
         """
 
         if password != password_confirm:
             raise ValueError("passwords do not match")
 
-        return await self._create_user(
-            username, password, email, self.app_cfg.auto_activate_accounts
-        )
+        return {
+            "success": await self._create_user(
+                username, password, email, self.app_cfg.auto_activate_accounts
+            )
+        }
 
     async def get_user(self, username: str, access_token: Optional[str] = None) -> dict:
         """Returns a dictionary containing Userinformation.
@@ -183,7 +185,7 @@ class UserWorkflow:
 
     async def admin_create_user(
         self, username: str, password: str, email: str, access_token: str
-    ) -> User:
+    ) -> dict:
         """Lets an administrator create an User
 
         Args:
@@ -196,7 +198,7 @@ class UserWorkflow:
             PermissionError: If the User is not an administrator this gets raised
 
         Returns:
-            bool: True if the creation was successfull
+            dict: :code:`{"success":True}` if operation was successfull
         """
         _, is_admin = _get_info_from_token(
             self.jwt_validator, self.app_cfg, access_token
@@ -205,9 +207,9 @@ class UserWorkflow:
         if not is_admin:
             raise PermissionError("Missing Permissions")
 
-        return await self._create_user(username, password, email, True)
+        return {"success":await self._create_user(username, password, email, True)}
 
-    async def delete_user(self, access_token: str, username: str) -> bool:
+    async def delete_user(self, access_token: str, username: str) -> dict:
         """A user can delete himself or an Administrator can do so as well
 
         Args:
@@ -218,7 +220,7 @@ class UserWorkflow:
             PermissionError: If you are not an admin or the User itself
 
         Returns:
-            bool: True if the deletion was successfull.
+            dict: :code:`{"success":True}` if operation was successfull
         """
 
         user, is_admin = _get_info_from_token(
@@ -230,7 +232,7 @@ class UserWorkflow:
 
         user = await User.get(username=username)
         await user.delete()
-        return True
+        return {"success":True}
 
     async def change_user(
         self,
@@ -238,8 +240,8 @@ class UserWorkflow:
         access_token: str,
         password: Optional[str] = None,
         email: Optional[str] = None,
-        activated: Optional[bool] = None
-    ) -> bool:
+        activated: Optional[bool] = None,
+    ) -> dict:
         """Used to change an User
 
         For Ldap authenticated Users you ca only change the Activation state.
@@ -260,19 +262,23 @@ class UserWorkflow:
             ValueError: Changed Value is invalid
 
         Returns:
-            bool: True if change was successfull
+            dict: :code:`{"success":True}` if operation was successfull
         """
 
-        req_user,is_admin = _get_info_from_token(self.jwt_validator,self.app_cfg,access_token)
+        req_user, is_admin = _get_info_from_token(
+            self.jwt_validator, self.app_cfg, access_token
+        )
 
-        #check if we are allowed to even change the user
+        # check if we are allowed to even change the user
         if req_user != username or not is_admin:
             raise PermissionError("Missing Permission")
 
         user: User = await User.get(username=username)
 
-        #check if its an local user or an AD User
-        is_ad_user = user.auth_type == AuthSource.LDAP or user.auth_type == AuthSource.KERBEROS
+        # check if its an local user or an AD User
+        is_ad_user = (
+            user.auth_type == AuthSource.LDAP or user.auth_type == AuthSource.KERBEROS
+        )
 
         if is_ad_user and (password is not None or email is not None):
             raise ValueError("can't change Attribute for AD User")
@@ -281,13 +287,13 @@ class UserWorkflow:
             raise PermissionError("Unauthorized")
 
         if email is not None:
-            #check email
+            # check email
             if re.fullmatch(self.app_cfg.email_regex, email) is None:
                 raise ValueError("bad email")
             user.email = email
 
         if activated is not None:
-            user.activated = activated  
+            user.activated = activated
 
         if password is not None:
             # create password hash
@@ -300,4 +306,4 @@ class UserWorkflow:
 
         await user.save()
 
-        return True
+        return {"success":True}
