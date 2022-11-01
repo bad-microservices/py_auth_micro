@@ -1,4 +1,7 @@
-import ldap
+try:
+    import ldap
+except ImportError:
+    pass
 import logging
 
 from ._loginbaseclass import LoginBaseClass

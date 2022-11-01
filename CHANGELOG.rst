@@ -1,6 +1,12 @@
 Changelog
 =============
 
+0.0.6
+-------
+
+* ldap import now optional
+
+
 0.0.3
 -------
 
