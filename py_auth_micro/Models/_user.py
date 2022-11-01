@@ -1,4 +1,4 @@
-import re
+import logging
 import datetime
 
 from typing import Optional
@@ -87,16 +87,21 @@ class User(Model):
         Returns:
             Token: _description_
         """
+        logger = logging.getLogger(__name__)
+        logger.info(f"creating token for {self.username}")
         # check if old Token exists
         token = await Token.get_or_none(user=self.username)
 
         # delete old token
         if token is not None:
+            logger.debug(f"deleting old Token with id: {token.token_id}")
             await token.delete()
 
         valid_until = datetime.datetime.now(
             tz=datetime.timezone.utc
         ) + datetime.timedelta(minutes=app_config.id_token_valid_time)
+
+        logger.debug(f"creating token for {self.username} with following specs:\nip: {ip}\nmethod: {jwt_encoder.signmethod.value}\nvhost: {vhost}\nvhost: {vhost}")
 
         token = await Token.create(
             user=self,
@@ -114,6 +119,8 @@ class User(Model):
         Returns:
             bool: The Token got revoked.
         """
+        logger = logging.getLogger(__name__)
+        logger.info(f"revoking ID-Token for {self.username}")
         if self.token is not None:
             await self.token.delete()
         return True

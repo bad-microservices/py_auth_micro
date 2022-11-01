@@ -1,3 +1,4 @@
+import logging
 import datetime
 
 from tortoise import fields
@@ -76,7 +77,8 @@ Valid Options>
         Returns:
             str: The ID-JWT
         """
-
+        logger = logging.getLogger(__name__)
+        logger.info(f"creating ID-Token JWT with id: {self.token_id}")
         usergroups = await self.user.groups.all().values_list("name", flat=True)
 
         token = jwt_encoder.create_jwt(
@@ -89,7 +91,7 @@ Valid Options>
             {"groups": usergroups, "username": str(self.user)},
             app_cfg.id_token_valid_time,
         )
-
+        logger.debug(f"token: {token}")
         return token
 
     @staticmethod
@@ -114,10 +116,14 @@ Valid Options>
         Returns:
             Token: the matched Database Token instance.
         """
-
+        logger = logging.getLogger(__name__)
+        logger.info(f"verifying ID-Token from {ip}")
+        logger.debug(f"token: {id_jwt}")
         token_content = jwt_validator.get_jwt_as_dict(id_jwt)
 
         token_header = token_content["headers"]
+
+        logger.debug(f"token-headers: {token_header}")
 
         if token_header["type"] != "ID-Token":
             raise ValueError("not an ID-Token")
@@ -129,12 +135,15 @@ Valid Options>
         if ip is not None and (
             token_header["aud"] != ip or token_header["aud"] != token.ip
         ):
-            raise ValueError("Token IP mismatch!")
+            logger.error("Token IP missmatch!")
+            raise ValueError("Token IP missmatch!")
 
         # check vhost
         if token.vhost != token_header.get("vhost", None):
+            logger.error("VHost missmatch!")
             raise ValueError("VHost missmatch!")
 
+        logger.info("Token is valid")
         # return the Token from the Database
         return token
 
@@ -151,9 +160,10 @@ Valid Options>
         Returns:
             str: a JWT Token
         """
-
+        logger = logging.getLogger(__name__)
+        logger.info("creating Access-Token")
         usergroups = await (await self.user).groups.all().values_list("name", flat=True)
-
+        logger.debug(f"Token Groups: {usergroups}")
         return jwt_encoder.create_jwt(
             {
                 "aud": usergroups,
