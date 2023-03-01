@@ -24,7 +24,7 @@ class SessionWorkflow:
 
     async def login(
         self, username: str, password: str, vhost: str = "test", ip: str = "*"
-    ) -> str:
+    ) -> dict:
         """This Function checks the User Credentials and returns an ID-Token on success.
 
         Args:
@@ -34,15 +34,20 @@ class SessionWorkflow:
             ip (str, optional): IP of the Host making the Request. The ID-Token gets bound to that Request-IP. Defaults to "*".
 
         Returns:
-            str: _description_
+            dict: `resp_data` contains the id_token
         """
         user: User = await login(username, password, self.ldap_cfg)
         token_obj = await user.create_id_token(
             self.jwt_encoder, self.app_cfg, vhost, ip
         )
-        return {"id_token": await token_obj.get_id_jwt(self.jwt_encoder, self.app_cfg)} 
+        return {
+            "resp_code": 200,
+            "resp_data": {
+                "id_token": await token_obj.get_id_jwt(self.jwt_encoder, self.app_cfg)
+            },
+        }
 
-    async def logout(self, id_token: str, ip: str = "*") -> bool:
+    async def logout(self, id_token: str, ip: str = "*") -> dict:
         """Invalidates the ID-Token given and thereby logs the User out
 
         Args:
@@ -50,12 +55,17 @@ class SessionWorkflow:
             ip (str, optional): IP Address making the Request. Used for validating the ID-Token. Defaults to "*".
 
         Returns:
-            bool: True if revoked successfully
+            dict: `resp_code` = 200 if logout was successfull, `resp_code` = 500 if it was not
         """
         token = await Token.verify_id_jwt(self.jwt_validator, id_token, ip)
         user: User = await token.user
 
-        return {"success":await user.revoke_id_token()}
+        success = await user.revoke_id_token()
+
+        if success:
+            return {"resp_code": 200, "resp_data": {"msg": "Logout was successfull"}}
+
+        return {"resp_code": 500, "resp_data": {"msg": "Logout was not successfull"}}
 
     async def get_access_token(self, id_token: str, ip: str = "*") -> str:
         """Verifies an ID-Token and returns an Access-Token
@@ -65,9 +75,9 @@ class SessionWorkflow:
             ip (str, optional): IP-Address of the requesting User. Defaults to "*".
 
         Returns:
-            str: Access-Token
+            dict: `resp_data` contains `access_token`
         """
         token = await Token.verify_id_jwt(self.jwt_validator, id_token, ip)
         access_jwt = await token.create_access_jwt(self.jwt_encoder, self.app_cfg)
 
-        return {"access_token":access_jwt}
+        return {"resp_code": 200, "resp_data": {"access_token": access_jwt}}

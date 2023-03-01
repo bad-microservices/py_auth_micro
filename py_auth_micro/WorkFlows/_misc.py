@@ -12,7 +12,7 @@ def _get_info_from_token(jwt_validator:JWTValidator,app_cfg:AppConfig, access_to
         app_cfg (AppConfig): AppConfig containing the Admin Group name.
         access_token (str): The Access Token to validate.
     Raises:
-            ValueError: The Token could not be verified.
+        ValueError: The Token could not be verified.
 
     Returns:
         tuple[str, bool]: username, is_admin

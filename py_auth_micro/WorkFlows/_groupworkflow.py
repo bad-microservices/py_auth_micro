@@ -20,7 +20,9 @@ class GroupWorkflow:
     jwt_validator: JWTValidator
     app_cfg: AppConfig
 
-    async def _perm_and_name_check(self, access_token: str, group_name: str) -> Optional[Group]:
+    async def _perm_and_name_check(
+        self, access_token: str, group_name: str
+    ) -> Optional[Group]:
         """Will check the Permissions of the access Token and if the group already exists.
 
         Args:
@@ -32,7 +34,7 @@ class GroupWorkflow:
 
         Returns:
             Optional[Group]: If the Group exists return it. None if it does not exist.
-        """       
+        """
         _, is_admin = _get_info_from_token(
             self.jwt_validator, self.app_cfg, access_token
         )
@@ -47,6 +49,30 @@ class GroupWorkflow:
 
         return group
 
+    async def get_groups(self, access_token: str) -> dict:
+        """This Function returns a list of all Groups
+
+        Args:
+            access_token (str): Access-Token of the Requesting User.
+
+        Returns:
+            dict: `resp_data` contains the key groups which is a list of all groups.
+        """
+        self.jwt_validator.verify_jwt(access_token)
+        groups_raw = await Group.all()
+
+        groups = []
+
+        for group in groups_raw:
+            groups.append(group.name)
+
+        if len(groups) == 0:
+            status_code = 204
+        else:
+            status_code = 200
+
+        return {"resp_code": status_code, "resp_data": {"groups": groups}}
+
     async def create_group(self, access_token: str, group_name: str) -> dict:
         """Creates a Group with the specified Name
 
@@ -58,7 +84,7 @@ class GroupWorkflow:
             ValueError: Group already exists.
 
         Returns:
-            bool: `True` if the Group was created, `False` could not be created.
+            dict: `resp_code` = 200 action was successfull, `resp_code` = 500 if it was not
         """
         # check groups Existence and Requesting Users Permission
         if await self._perm_and_name_check(access_token, group_name) is not None:
@@ -67,9 +93,12 @@ class GroupWorkflow:
         try:
             await Group.create(name=group_name)
         except Exception:
-            return {"success":False}
+            return {
+                "resp_code": 500,
+                "resp_data": {"msg": f"could not create group {group_name}"},
+            }
 
-        return {"success":True}
+        return {"resp_code": 200, "resp_data": {"msg": f"created group {group_name}"}}
 
     async def delete_group(self, access_token: str, group_name: str) -> dict:
         """Deletes the specified Group.
@@ -82,7 +111,7 @@ class GroupWorkflow:
             ValueError: Group does not exist
 
         Returns:
-            bool: `True` Group got deleted, `False` Group could not get deleted.
+            dict: `resp_code` = 200 action was successfull, `resp_code` = 500 if it was not
         """
         # check groups Existence and Requesting Users Permission
         group = await self._perm_and_name_check(access_token, group_name)
@@ -93,9 +122,12 @@ class GroupWorkflow:
         try:
             await group.delete()
         except Exception:
-            return {"success":False}
+            return {
+                "resp_code": 500,
+                "resp_data": {"msg": f"could not delete group {group_name}"},
+            }
 
-        return {"success":True}
+        return {"resp_code": 200, "resp_data": {"msg": f"deleted group {group_name}"}}
 
     async def add_user_to_group(
         self, access_token: str, group_name: str, user_name: str
@@ -111,7 +143,7 @@ class GroupWorkflow:
             ValueError: Group does not exist.
 
         Returns:
-            bool: `True` Added User Successfully. `False` didn't add User to Group.
+            dict: `resp_code` = 200 action was successfull, `resp_code` = 500 if it was not
         """
 
         # check groups Existence and Requesting Users Permission
@@ -125,9 +157,17 @@ class GroupWorkflow:
         try:
             await group.users.add(user)
         except Exception:
-            return {"success":False}
+            return {
+                "resp_code": 500,
+                "resp_data": {
+                    "msg": f"could not add user {user_name} to group {group_name}"
+                },
+            }
 
-        return {"success":True}
+        return {
+            "resp_code": 200,
+            "resp_data": {"msg": f"added user {user_name} to group {group_name}"},
+        }
 
     async def remove_user_from_group(
         self, access_token: str, group_name: str, user_name: str
@@ -143,7 +183,7 @@ class GroupWorkflow:
             ValueError: Group does not exist.
 
         Returns:
-            bool: `True` Removed User Successfully. `False` didn't remove User from Group.
+            dict: `resp_code` = 200 action was successfull, `resp_code` = 500 if it was not
         """
 
         # check groups Existence and Requesting Users Permission
@@ -157,6 +197,14 @@ class GroupWorkflow:
         try:
             await group.users.remove(user)
         except Exception:
-            return {"success":False}
+            return {
+                "resp_code": 500,
+                "resp_data": {
+                    "msg": f"could not remove user {user_name} to group {group_name}"
+                },
+            }
 
-        return {"success":True}
+        return {
+            "resp_code": 200,
+            "resp_data": {"msg": f"removed user {user_name} to group {group_name}"},
+        }

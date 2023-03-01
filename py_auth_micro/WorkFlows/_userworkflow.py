@@ -7,7 +7,7 @@ from jwt_helper import JWTEncoder, JWTValidator
 from typing import Optional
 
 from ..Models import User
-from ..Exceptions import AlreadyExists, PermissionError
+from ..Exceptions import AlreadyExists
 from ..Config import AppConfig
 from ..Core import AuthSource
 
@@ -36,14 +36,14 @@ class UserWorkflow:
             PermissionError: If the Access Token is invalid
 
         Returns:
-            list[str] : A list of all known Users
+            dict : A list of all known Users
         """
         if not self.jwt_validator.verify_jwt(access_token):
             raise PermissionError("Not Authorized")
 
         users = await User.all().values_list("username", flat=True)
 
-        return {"users": users}
+        return {"resp_code": 200, "resp_data": {"users": users}}
 
     async def _create_user(
         self, username: str, password: str, email: str, activated: bool = False
@@ -114,16 +114,22 @@ class UserWorkflow:
             ValueError: some Values do not match the specified Regexes or the password confirmation does not match the Password.
 
         Returns:
-            dict: :code:`{"success":True}` if operation was successfull
+            dict: `resp_code` 200 if operation was successfull
         """
 
         if password != password_confirm:
             raise ValueError("passwords do not match")
 
+        user_created = await self._create_user(
+            username, password, email, self.app_cfg.auto_activate_accounts
+        )
+
+        if user_created:
+            return {"resp_code": 201, "resp_data": {"msg": f"created user {username}"}}
+
         return {
-            "success": await self._create_user(
-                username, password, email, self.app_cfg.auto_activate_accounts
-            )
+            "resp_code": 400,
+            "resp_data": {"msg": f"could not create user {username}"},
         }
 
     async def get_user(self, username: str, access_token: Optional[str] = None) -> dict:
@@ -181,7 +187,7 @@ class UserWorkflow:
                 }
             )
 
-        return user_dict
+        return {"resp_code": 200, "resp_data": user_dict}
 
     async def admin_create_user(
         self, username: str, password: str, email: str, access_token: str
@@ -207,7 +213,15 @@ class UserWorkflow:
         if not is_admin:
             raise PermissionError("Missing Permissions")
 
-        return {"success":await self._create_user(username, password, email, True)}
+        created = await self._create_user(username, password, email, True)
+
+        if created:
+            return {"resp_code": 201, "resp_data": {"msg": f"created user {username}"}}
+
+        return {
+            "resp_code": 400,
+            "resp_data": {"msg": f"could not create user {username}"},
+        }
 
     async def delete_user(self, access_token: str, username: str) -> dict:
         """A user can delete himself or an Administrator can do so as well
@@ -232,7 +246,7 @@ class UserWorkflow:
 
         user = await User.get(username=username)
         await user.delete()
-        return {"success":True}
+        return {"resp_code": 200, "resp_data": {"msg": f"deleted user {username}"}}
 
     async def change_user(
         self,
@@ -242,7 +256,7 @@ class UserWorkflow:
         email: Optional[str] = None,
         activated: Optional[bool] = None,
     ) -> dict:
-        """Used to change an User
+        """Used to change a User
 
         For Ldap authenticated Users you ca only change the Activation state.
         The activation State can only be changed by an Administrator.
@@ -306,4 +320,7 @@ class UserWorkflow:
 
         await user.save()
 
-        return {"success":True}
+        return {
+            "resp_code": 200,
+            "resp_data": {"msg": f"changed data for user {username}"},
+        }
