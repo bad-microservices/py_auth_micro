@@ -1,6 +1,10 @@
 Changelog
 =============
 
+0.0.8
+-------
+* All Workflow Functions now accept arbitary number of kwargs
+* App Config got extended by a :code:`default_vhost` Setting which will get used in the :code:`SessionWorkflow`
 
 0.0.7
 -------

@@ -1,5 +1,6 @@
 from jwt_helper import JWTEncoder, JWTValidator
 from dataclasses import dataclass
+from typing import Optional
 
 from ..LoginHandler import login
 from ..Models import User, Token
@@ -23,7 +24,13 @@ class SessionWorkflow:
     app_cfg: AppConfig
 
     async def login(
-        self, username: str, password: str, vhost: str = "test", ip: str = "*"
+        self,
+        *,
+        username: str,
+        password: str,
+        vhost: Optional[str] = None,
+        ip: str = "*",
+        **kwargs
     ) -> dict:
         """This Function checks the User Credentials and returns an ID-Token on success.
 
@@ -36,6 +43,10 @@ class SessionWorkflow:
         Returns:
             dict: `resp_data` contains the id_token
         """
+
+        if vhost is None:
+            vhost = self.app_cfg.default_vhost
+            
         user: User = await login(username, password, self.ldap_cfg)
         token_obj = await user.create_id_token(
             self.jwt_encoder, self.app_cfg, vhost, ip
@@ -47,7 +58,7 @@ class SessionWorkflow:
             },
         }
 
-    async def logout(self, id_token: str, ip: str = "*") -> dict:
+    async def logout(self, *, id_token: str, ip: str = "*", **kwargs) -> dict:
         """Invalidates the ID-Token given and thereby logs the User out
 
         Args:
@@ -67,7 +78,7 @@ class SessionWorkflow:
 
         return {"resp_code": 500, "resp_data": {"msg": "Logout was not successfull"}}
 
-    async def get_access_token(self, id_token: str, ip: str = "*") -> str:
+    async def get_access_token(self, *, id_token: str, ip: str = "*", **kwargs) -> str:
         """Verifies an ID-Token and returns an Access-Token
 
         Args:

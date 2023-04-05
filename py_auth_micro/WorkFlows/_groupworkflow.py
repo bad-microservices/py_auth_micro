@@ -21,7 +21,7 @@ class GroupWorkflow:
     app_cfg: AppConfig
 
     async def _perm_and_name_check(
-        self, access_token: str, group_name: str
+        self, *, access_token: str, group_name: str, **kwargs
     ) -> Optional[Group]:
         """Will check the Permissions of the access Token and if the group already exists.
 
@@ -49,7 +49,7 @@ class GroupWorkflow:
 
         return group
 
-    async def get_groups(self, access_token: str) -> dict:
+    async def get_groups(self, *, access_token: str, **kwargs) -> dict:
         """This Function returns a list of all Groups
 
         Args:
@@ -73,7 +73,9 @@ class GroupWorkflow:
 
         return {"resp_code": status_code, "resp_data": {"groups": groups}}
 
-    async def create_group(self, access_token: str, group_name: str) -> dict:
+    async def create_group(
+        self, *, access_token: str, group_name: str, **kwargs
+    ) -> dict:
         """Creates a Group with the specified Name
 
         Args:
@@ -100,7 +102,9 @@ class GroupWorkflow:
 
         return {"resp_code": 200, "resp_data": {"msg": f"created group {group_name}"}}
 
-    async def delete_group(self, access_token: str, group_name: str) -> dict:
+    async def delete_group(
+        self, *, access_token: str, group_name: str, **kwargs
+    ) -> dict:
         """Deletes the specified Group.
 
         Args:
@@ -130,7 +134,7 @@ class GroupWorkflow:
         return {"resp_code": 200, "resp_data": {"msg": f"deleted group {group_name}"}}
 
     async def add_user_to_group(
-        self, access_token: str, group_name: str, user_name: str
+        self, *, access_token: str, group_name: str, user_name: str, **kwargs
     ) -> dict:
         """Adds a User to a group
 
@@ -170,7 +174,7 @@ class GroupWorkflow:
         }
 
     async def remove_user_from_group(
-        self, access_token: str, group_name: str, user_name: str
+        self, *, access_token: str, group_name: str, user_name: str, **kwargs
     ) -> dict:
         """Removes a User from a group
 
