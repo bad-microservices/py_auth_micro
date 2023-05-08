@@ -1,6 +1,9 @@
 Changelog
 =============
 
+0.1.1
+-------
+* BUGFIX: :code:`_perm_and_name_check` in :code:`GroupWorkflow` got called without kwargs... again
 
 0.1.0
 -------
