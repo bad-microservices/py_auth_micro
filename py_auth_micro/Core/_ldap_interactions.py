@@ -31,31 +31,19 @@ class LDAPHelper:
         """
         return self._userinfo["email"]
 
-    def _get_connection(self):
-        conn = ldap.initialize(self.config.address)
-        conn.protocol_version = 3
-        conn.set_option(ldap.OPT_REFERRALS, 0)
-        # if a ca_file is specified create an tls context for ldaps
-        if self.config.ca_file is not None:
-            conn.set_option(ldap.OPT_X_TLS_CACERTFILE, self.config.ca_file)
-            conn.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
-
-        username = f"{self.config.domain}\\{self.username}"
-        conn.simple_bind_s(username, self.password)
-        return conn
-
     def _get_user_info(self):
-        ldap_connection = self._get_connection()
-        userfilter = f"(&(objectClass=user)(sAMAccountName={self.username}))"
-        _, data = ldap_connection.search_s(
-            self.config.base_dn, ldap.SCOPE_SUBTREE, userfilter, None
-        )[0]
-        groups_raw = data["memberOf"]
-        groups = []
-        for group in groups_raw:
-            group = group.decode("utf-8")
-            group = group[group.index("CN=") + 3 : group.index(",")]
-            groups.append(group)
+        connection_handler = _ConnectionHandler(self.config,self.username,self.password)
+        with connection_handler as ldap_connection:
+            userfilter = f"(&(objectClass=user)(sAMAccountName={self.username}))"
+            _, data = ldap_connection.search_s(
+                self.config.base_dn, ldap.SCOPE_SUBTREE, userfilter, None
+            )[0]
+            groups_raw = data["memberOf"]
+            groups = []
+            for group in groups_raw:
+                group = group.decode("utf-8")
+                group = group[group.index("CN=") + 3 : group.index(",")]
+                groups.append(group)
 
         try:
             mail = data["mail"][0]
@@ -95,3 +83,30 @@ class LDAPHelper:
             return True
 
         return False
+
+class _ConnectionHandler:
+    conn = None
+    config:LDAPConfig = None
+    def __init__(self,ldap_config:LDAPConfig,username:str,password:str):
+        self.config = ldap_config
+        self.username = username
+        self.password = password
+        
+
+    def __enter__(self):
+        self.conn = ldap.initialize(self.config.address)
+        self.conn.protocol_version = 3
+        self.conn.set_option(ldap.OPT_REFERRALS, 0)
+        # if a ca_file is specified create an tls context for ldaps
+        if self.config.ca_file is not None:
+            self.conn.set_option(ldap.OPT_X_TLS_CACERTFILE, self.config.ca_file)
+            self.conn.set_option(ldap.OPT_X_TLS_NEWCTX, 0)
+
+        username = f"{self.config.domain}\\{self.username}"
+        self.conn.simple_bind_s(username, self.password)
+        
+        return self.conn
+
+    def __exit__(self):
+        if self.conn is not None:
+            self.conn.unbind_s()
