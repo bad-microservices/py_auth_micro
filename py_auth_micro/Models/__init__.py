@@ -1,6 +1,6 @@
 """This SubModule contains the Database Model Definitions.
 
-Since this package uses :code:`Tortoise ORM` they are needed! 
+Since this package uses :code:`Tortoise ORM` they are needed!
 
 """
 from ._group import Group

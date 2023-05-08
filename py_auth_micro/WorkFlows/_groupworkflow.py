@@ -89,7 +89,12 @@ class GroupWorkflow:
             dict: `resp_code` = 200 action was successfull, `resp_code` = 500 if it was not
         """
         # check groups Existence and Requesting Users Permission
-        if await self._perm_and_name_check(access_token, group_name) is not None:
+        if (
+            await self._perm_and_name_check(
+                access_token=access_token, group_name=group_name
+            )
+            is not None
+        ):
             raise ValueError("Group already exist")
 
         try:

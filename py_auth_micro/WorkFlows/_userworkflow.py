@@ -3,7 +3,7 @@ import re
 
 from dataclasses import dataclass
 from tortoise.exceptions import DoesNotExist
-from jwt_helper import JWTEncoder, JWTValidator
+from jwt_helper import JWTValidator
 from typing import Optional
 
 from ..Models import User

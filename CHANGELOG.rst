@@ -1,6 +1,12 @@
 Changelog
 =============
 
+
+0.1.0
+-------
+* Formating Fixes
+* BUGFIX: :code:`_perm_and_name_check` in :code:`GroupWorkflow` got called without kwargs
+
 0.0.9
 -------
 * BUGFIX: :code:`_create_user` only takes KW arguments which i forgot...

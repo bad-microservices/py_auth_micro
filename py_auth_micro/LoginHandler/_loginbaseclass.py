@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-from ..Models import User
-
 
 class LoginBaseClass(ABC):
     """Abstract Baseclass for Authenticating Users

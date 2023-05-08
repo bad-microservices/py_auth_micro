@@ -46,7 +46,7 @@ class SessionWorkflow:
 
         if vhost is None:
             vhost = self.app_cfg.default_vhost
-            
+
         user: User = await login(username, password, self.ldap_cfg)
         token_obj = await user.create_id_token(
             self.jwt_encoder, self.app_cfg, vhost, ip
