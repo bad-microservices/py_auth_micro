@@ -129,7 +129,10 @@ class UserWorkflow:
             raise ValueError("passwords do not match")
 
         user_created = await self._create_user(
-            username, password, email, self.app_cfg.auto_activate_accounts
+            username=username,
+            password=password,
+            email=email,
+            activated=self.app_cfg.auto_activate_accounts,
         )
 
         if user_created:
@@ -223,7 +226,9 @@ class UserWorkflow:
         if not is_admin:
             raise PermissionError("Missing Permissions")
 
-        created = await self._create_user(username, password, email, True)
+        created = await self._create_user(
+            username=username, password=password, email=email, activated=True
+        )
 
         if created:
             return {"resp_code": 201, "resp_data": {"msg": f"created user {username}"}}

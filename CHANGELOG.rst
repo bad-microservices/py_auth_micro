@@ -1,6 +1,10 @@
 Changelog
 =============
 
+0.0.9
+-------
+* BUGFIX: :code:`_create_user` only takes KW arguments which i forgot...
+
 0.0.8
 -------
 * All Workflow Functions now accept arbitary number of kwargs
