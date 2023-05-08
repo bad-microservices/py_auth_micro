@@ -73,6 +73,30 @@ class GroupWorkflow:
 
         return {"resp_code": status_code, "resp_data": {"groups": groups}}
 
+    async def group_members(self, *, access_token: str, groupname: str, **kwargs) -> list:
+        """This Function returns all Users in a group
+
+        Args:
+            access_token (str): Access-Token of the Requesting User.
+            groupname (str): Name of the Group of which we want the Users.
+
+        Raises:
+            ValueError: if Group does not exist.
+            PermissionError: if User is not an admin.
+
+        Returns:
+            list: List of all usernames in this group.
+        """
+
+        group = await self._perm_and_name_check(
+            access_token=access_token, groupname=groupname
+        )
+        if group is None:
+            raise ValueError("Group does not exist")
+
+        userlist = await group.users.values_list("username", True)
+        return {"resp_code": 200, "resp_data": {"users": userlist}}
+
     async def create_group(
         self, *, access_token: str, groupname: str, **kwargs
     ) -> dict:

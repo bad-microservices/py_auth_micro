@@ -6,9 +6,9 @@ from tortoise import fields
 from tortoise.models import Model
 from jwt_helper import JWTEncoder
 
-from ..Core import AuthSource
-from ..Config import AppConfig
-from ._token import Token
+from py_auth_micro.Core import AuthSource
+from py_auth_micro.Config import AppConfig
+from py_auth_micro._token import Token
 
 
 class User(Model):
