@@ -6,7 +6,7 @@ from tortoise.models import Model
 from typing import Optional
 from jwt_helper import SignMethod, JWTEncoder, JWTValidator
 
-from ..Config import AppConfig
+from py_auth_micro.Config import AppConfig
 
 
 class Token(Model):

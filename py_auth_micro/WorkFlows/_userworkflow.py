@@ -6,12 +6,12 @@ from tortoise.exceptions import DoesNotExist
 from jwt_helper import JWTValidator
 from typing import Optional
 
-from ..Models import User
-from ..Exceptions import AlreadyExists
-from ..Config import AppConfig
-from ..Core import AuthSource
+from py_auth_micro.Models import User
+from py_auth_micro.Exceptions import AlreadyExists
+from py_auth_micro.Config import AppConfig
+from py_auth_micro.Core import AuthSource
 
-from ._misc import _get_info_from_token
+from py_auth_micro.WorkFlows._misc import _get_info_from_token
 
 
 @dataclass
@@ -43,7 +43,11 @@ class UserWorkflow:
 
         users = await User.all().values_list("username", flat=True)
 
-        return {"resp_code": 200, "resp_data": {"users": users}}
+        resp_code = 200
+        if len(users) == 0:
+            resp_code = 204
+
+        return {"resp_code": resp_code, "resp_data": {"users": users}}
 
     async def _create_user(
         self,

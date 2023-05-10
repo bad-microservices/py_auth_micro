@@ -1,11 +1,13 @@
+import re
+
 from jwt_helper import JWTValidator
 from dataclasses import dataclass
 from typing import Optional
 
-from ..Models import Group, User
-from ..Config import AppConfig
+from py_auth_micro.Models import Group, User
+from py_auth_micro.Config import AppConfig
 
-from ._misc import _get_info_from_token
+from py_auth_micro.WorkFlows._misc import _get_info_from_token
 
 
 @dataclass
@@ -59,21 +61,18 @@ class GroupWorkflow:
             dict: `resp_data` contains the key groups which is a list of all groups.
         """
         self.jwt_validator.verify_jwt(access_token)
-        groups_raw = await Group.all()
 
-        groups = []
+        groups = await Group.all().values_list("name", flat=True)
 
-        for group in groups_raw:
-            groups.append(group.name)
-
+        resp_code = 200
         if len(groups) == 0:
-            status_code = 204
-        else:
-            status_code = 200
+            resp_code = 204
 
-        return {"resp_code": status_code, "resp_data": {"groups": groups}}
+        return {"resp_code": resp_code, "resp_data": {"groups": groups}}
 
-    async def group_members(self, *, access_token: str, groupname: str, **kwargs) -> list:
+    async def group_members(
+        self, *, access_token: str, groupname: str, **kwargs
+    ) -> list:
         """This Function returns all Users in a group
 
         Args:
@@ -121,13 +120,19 @@ class GroupWorkflow:
         ):
             raise ValueError("Group already exist")
 
+        error_response = {
+            "resp_code": 500,
+            "resp_data": {"msg": f"could not create group {groupname}"},
+        }
+
+        if re.fullmatch(self.app_cfg.group_regex, groupname) is None:
+            error_response["resp_data"] = {"msg":"Group Name is invalid"}
+            return error_response
+
         try:
             await Group.create(name=groupname)
         except Exception:
-            return {
-                "resp_code": 500,
-                "resp_data": {"msg": f"could not create group {groupname}"},
-            }
+            return error_response
 
         return {"resp_code": 200, "resp_data": {"msg": f"created group {groupname}"}}
 

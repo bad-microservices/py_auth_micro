@@ -21,6 +21,7 @@ class AppConfig:
     auto_activate_accounts: bool = True
     admin_group: str = "admin"
     default_vhost: str = "prod"
+    group_regex:str = r"[a-zA-Z0-9_-]{1,50}"
     username_regex: str = r"[a-zA-Z-_0-9]{4,30}"
     password_regex: str = r".{4,}"
     email_regex: str = r"[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)"

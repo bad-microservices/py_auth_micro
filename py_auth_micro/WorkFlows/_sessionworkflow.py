@@ -2,9 +2,9 @@ from jwt_helper import JWTEncoder, JWTValidator
 from dataclasses import dataclass
 from typing import Optional
 
-from ..LoginHandler import login
-from ..Models import User, Token
-from ..Config import AppConfig, LDAPConfig
+from py_auth_micro.LoginHandler import login
+from py_auth_micro.Models import User, Token
+from py_auth_micro.Config import AppConfig, LDAPConfig
 
 
 @dataclass

@@ -91,7 +91,7 @@ class _ConnectionHandler:
         self.config = ldap_config
         self.username = username
         self.password = password
-        
+
 
     def __enter__(self):
         self.conn = ldap.initialize(self.config.address)
@@ -107,6 +107,6 @@ class _ConnectionHandler:
         
         return self.conn
 
-    def __exit__(self):
+    def __exit__(self, *args):
         if self.conn is not None:
             self.conn.unbind_s()
