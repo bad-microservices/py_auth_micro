@@ -1,6 +1,10 @@
 Changelog
 =============
 
+0.1.2
+-------
+* new feature :code:`group_members` in :code:`GroupWorkflow` will return a list of all group Members.
+
 0.1.1
 -------
 * BUGFIX: :code:`_perm_and_name_check` in :code:`GroupWorkflow` got called without kwargs... again
