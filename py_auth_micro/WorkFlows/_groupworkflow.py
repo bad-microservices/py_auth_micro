@@ -244,11 +244,11 @@ class GroupWorkflow:
             return {
                 "resp_code": 500,
                 "resp_data": {
-                    "msg": f"could not remove user {username} to group {groupname}"
+                    "msg": f"could not remove user {username} from group {groupname}"
                 },
             }
 
         return {
             "resp_code": 200,
-            "resp_data": {"msg": f"removed user {username} to group {groupname}"},
+            "resp_data": {"msg": f"removed user {username} from group {groupname}"},
         }

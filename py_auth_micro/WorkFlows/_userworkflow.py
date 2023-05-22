@@ -162,10 +162,7 @@ class UserWorkflow:
         Returns:
             dict: Dictionary containing User Information
         """
-        try:
-            user = await User.get(username=username)
-        except Exception:
-            return "wtf"
+        user = await User.get(username=username)
 
         user_dict = {}
         user_dict["username"] = user.username
@@ -173,20 +170,20 @@ class UserWorkflow:
         user_dict["created_at"] = user.created_at.isoformat()
 
         if access_token is None:
-            return user_dict
+            return {"resp_code": 200, "resp_data": user_dict}
 
         requesting_user, is_admin = _get_info_from_token(
             self.jwt_validator, self.app_cfg, access_token
         )
 
         if user.username != requesting_user and not is_admin:
-            return user_dict
+            return {"resp_code": 200, "resp_data": user_dict}
 
         token = await user.token
 
         if token is None:
             user_dict["token_info"] = None
-            return user_dict
+            return {"resp_code": 200, "resp_data": user_dict}
 
         user_dict["token_info"] = {
             "valid_until": token.valid_until.isoformat(),

@@ -1,6 +1,11 @@
 Changelog
 =============
 
+0.1.5
+-------
+* BUGFIX: :code:`UserWorkflow` returned wrong data format for :code:`get_user`
+* BUGFIX: fixed typo in response message when deleting a group
+
 0.1.4
 -------
 * BUGFIX: :code:`group_members` this time for real...
