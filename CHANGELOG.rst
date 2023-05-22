@@ -1,6 +1,10 @@
 Changelog
 =============
 
+0.1.4
+-------
+* BUGFIX: :code:`group_members` this time for real...
+
 0.1.3
 -------
 * BUGFIX: :code:`group_members` had a bug which is now fixed....

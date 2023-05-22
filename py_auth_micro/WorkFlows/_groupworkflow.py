@@ -93,7 +93,7 @@ class GroupWorkflow:
         if group is None:
             raise ValueError("Group does not exist")
 
-        userlist = await group.users.all().values_list("username", True)
+        userlist = await group.users.all().values_list("username", flat=True)
         return {"resp_code": 200, "resp_data": {"users": userlist}}
 
     async def create_group(
