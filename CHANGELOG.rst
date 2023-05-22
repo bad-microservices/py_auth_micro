@@ -1,6 +1,10 @@
 Changelog
 =============
 
+0.1.3
+-------
+* BUGFIX: :code:`group_members` had a bug which is now fixed....
+
 0.1.2
 -------
 * new feature :code:`group_members` in :code:`GroupWorkflow` will return a list of all group Members.
