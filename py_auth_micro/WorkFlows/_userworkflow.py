@@ -181,6 +181,9 @@ class UserWorkflow:
 
         token = await user.token
 
+        #add groups
+        user_dict["groups"] = await user.groups.all().values_list("name", flat=True)
+
         if token is None:
             user_dict["token_info"] = None
             return {"resp_code": 200, "resp_data": user_dict}
@@ -324,7 +327,7 @@ class UserWorkflow:
                 raise ValueError("bad email")
             user.email = email
 
-        if activated is not None:
+        if activated is not None and is_admin:
             user.activated = activated
 
         if password is not None:

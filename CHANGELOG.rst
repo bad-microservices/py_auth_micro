@@ -1,6 +1,11 @@
 Changelog
 =============
 
+0.1.6
+-------
+* BUGFIX: :code:`UserWorkflow.change_user` now only allows changing the :code:`activated` attribute if the calling user is an admin
+* :code:`UserWorkflow.get_user` now includes a list of groups if the requesting user is an admin or the requested user himself
+
 0.1.5
 -------
 * BUGFIX: :code:`UserWorkflow` returned wrong data format for :code:`get_user`
