@@ -59,3 +59,11 @@ There is still alot todo for the :code:`1.0.0` Release. The following list conta
    - ☑ Api Reference
    - ☑ Installation
    - ☐ Example Code 
+
+
+Contributing
+=============
+
+Missing a Feature or found a bug? Create an Issue or make a Pull-Request ;)
+
+If you have any Question regarding this library feel free to create an issue.
