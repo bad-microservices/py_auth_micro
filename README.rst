@@ -74,44 +74,23 @@ TODO
 
 There is still alot todo for the :code:`1.0.0` Release. The following list contains the most important stuff
 
-- |uncheck_| Reset-Password functionality
-- |uncheck_| Unit Tests
-   - |uncheck_| WorkFlows
-      - |check_| :code:`GroupWorkflow`
-      - |uncheck_| :code:`SessionWorkflow`
-      - |uncheck_| :code:`UserWorkflow` 
-   - |uncheck_| Models
-      - |uncheck_| :code:`Group`
-      - |uncheck_| :code:`Token` 
-      - |uncheck_| :code:`User`
-   - |uncheck_| LoginHandler
-      - |uncheck_| :code:`LoginLDAP`
-      - |uncheck_| :code:`LoginLocal`
-   - |uncheck_| Core
-      - |uncheck_| :code:`LDAPHelper`
-      - |uncheck_| :code:`_ConnectionHandler`
-- |uncheck_| Documentation 
-   - |check_| Api Reference
-   - |check_| Installation
-   - |uncheck_| Example Code 
-
-
-
-
-
-
-.. |check| raw:: html
-
-    <input checked=""  type="checkbox">
-
-.. |check_| raw:: html
-
-    <input checked=""  disabled="" type="checkbox">
-
-.. |uncheck| raw:: html
-
-    <input type="checkbox">
-
-.. |uncheck_| raw:: html
-
-    <input disabled="" type="checkbox">
+- ☐ Reset-Password functionality
+- ☐ Unit Tests
+   - ☐ WorkFlows
+      - ☑ :code:`GroupWorkflow`
+      - ☐ :code:`SessionWorkflow`
+      - ☐ :code:`UserWorkflow` 
+   - ☐ Models
+      - ☐ :code:`Group`
+      - ☐ :code:`Token` 
+      - ☐ :code:`User`
+   - ☐ LoginHandler
+      - ☐ :code:`LoginLDAP`
+      - ☐ :code:`LoginLocal`
+   - ☐ Core
+      - ☐ :code:`LDAPHelper`
+      - ☐ :code:`_ConnectionHandler`
+- ☐ Documentation 
+   - ☑ Api Reference
+   - ☑ Installation
+   - ☐ Example Code 
