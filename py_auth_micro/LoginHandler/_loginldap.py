@@ -37,7 +37,7 @@ class LoginLDAP(LoginBaseClass):
         logger = logging.getLogger(__name__)
 
         if self.ldap_config is None:
-            logger.debug(f"no ldap_config provided... cant do ldap logins")
+            logger.debug("no ldap_config provided... can't do ldap logins")
             return False
 
 

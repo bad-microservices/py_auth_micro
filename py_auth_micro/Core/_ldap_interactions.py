@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+
 try:
     import ldap
 except ImportError:
@@ -27,12 +28,13 @@ class LDAPHelper:
 
     @property
     def email(self):
-        """Extracts the Users email after he sucessfully logged in (if he needs to be created in the Database)
-        """
+        """Extracts the Users email after he sucessfully logged in (if he needs to be created in the Database)"""
         return self._userinfo["email"]
 
     def _get_user_info(self):
-        connection_handler = _ConnectionHandler(self.config,self.username,self.password)
+        connection_handler = _ConnectionHandler(
+            self.config, self.username, self.password
+        )
         with connection_handler as ldap_connection:
             userfilter = f"(&(objectClass=user)(sAMAccountName={self.username}))"
             _, data = ldap_connection.search_s(
@@ -84,14 +86,15 @@ class LDAPHelper:
 
         return False
 
+
 class _ConnectionHandler:
     conn = None
-    config:LDAPConfig = None
-    def __init__(self,ldap_config:LDAPConfig,username:str,password:str):
+    config: LDAPConfig = None
+
+    def __init__(self, ldap_config: LDAPConfig, username: str, password: str):
         self.config = ldap_config
         self.username = username
         self.password = password
-
 
     def __enter__(self):
         self.conn = ldap.initialize(self.config.address)
@@ -104,7 +107,7 @@ class _ConnectionHandler:
 
         username = f"{self.config.domain}\\{self.username}"
         self.conn.simple_bind_s(username, self.password)
-        
+
         return self.conn
 
     def __exit__(self, *args):
