@@ -1,6 +1,15 @@
 Changelog
 =============
 
+0.1.7
+-------
+* Removed :code:`LoginHandler.LoginKerberos` because it's not needed
+* documentation:
+   * switched theme to ``pydata``
+   * added :code:`Exceptions` submodule documentation
+* Code:
+   * switched to absolute imports instead of relative imports 
+
 0.1.6
 -------
 * BUGFIX: :code:`UserWorkflow.change_user` now only allows changing the :code:`activated` attribute if the calling user is an admin

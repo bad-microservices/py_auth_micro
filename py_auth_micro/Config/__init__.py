@@ -7,8 +7,8 @@ The Following Config Classes are provided:
     * :code:`AppConfig` - for general Settings regarding this Package.
 
 """
-from ._ldapconfig import LDAPConfig
-from ._dbconfig import DBConfig
-from ._appconfig import AppConfig
+from py_auth_micro.Config._ldapconfig import LDAPConfig
+from py_auth_micro.Config._dbconfig import DBConfig
+from py_auth_micro.Config._appconfig import AppConfig
 
 __all__ = ["LDAPConfig", "DBConfig","AppConfig"]

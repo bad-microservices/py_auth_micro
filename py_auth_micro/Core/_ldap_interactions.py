@@ -2,7 +2,7 @@ from dataclasses import dataclass
 try:
     import ldap
 except ImportError:
-    print("cant import python-ldap\nldap connection wont work")
+    print("cant import python-ldap\nldap connection won't work")
 
 from ..Config import LDAPConfig
 
@@ -12,7 +12,7 @@ class LDAPHelper:
     """A class which helps interacting with an LDAP Server
 
     Warning:
-        While instantiating this class it will bin against the LDAP!
+        While instantiating this class it will bind against the LDAP!
 
     Attributes:
         config (LDAPConfig): The Configuration to connect to the LDAP.

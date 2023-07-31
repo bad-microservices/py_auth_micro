@@ -9,9 +9,9 @@ bcrypt = "*"
 jwt_helper = ">=0.0.7"
 
 [dev-packages]
-sphinx-immaterial = "*"
+sphinxcontrib-napoleon = "*"
+pydata-sphinx-theme = "*"
 sphinx-autodoc-typehints = "*"
-sphinx-copybutton = "*"
 black = "*"
 build = "*"
 setuptools = "*"

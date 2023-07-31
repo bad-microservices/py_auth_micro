@@ -17,7 +17,9 @@ devdeps:
 
 doc: devdeps
 	rm -fR ./_build
+	cp ./CHANGELOG.rst ./doc/CHANGELOG.rst
 	pipenv run sphinx-build -M html doc _build
+	rm -fR ./doc/CHANGELOG.rst
 
 package: devdeps
 	rm -fR dist/

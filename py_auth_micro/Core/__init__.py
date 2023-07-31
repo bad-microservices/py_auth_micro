@@ -7,7 +7,7 @@ Provides the Following classes:
 
 """
 
-from ._enums import AuthSource
-from ._ldap_interactions import LDAPHelper
+from py_auth_micro.Core._enums import AuthSource
+from py_auth_micro.Core._ldap_interactions import LDAPHelper
 
 __all__ = ["AuthSource", "LDAPHelper"]
