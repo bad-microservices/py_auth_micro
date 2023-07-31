@@ -6,7 +6,7 @@ py_auth_micro
     :target: https://pypi.org/project/black
 
 .. image:: https://app.codacy.com/project/badge/Grade/199fd463ff1a487eb206a2afbfb25168
-    :target: https://www.codacy.com/gh/bad-microservices/py_auth_micro/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bad-microservices/py_auth_micro&amp;utm_campaign=Badge_Grade
+    :target: https://app.codacy.com/gh/bad-microservices/py_auth_micro/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
 
 .. image:: https://badge.fury.io/py/py-auth-micro.svg
     :target: https://badge.fury.io/py/py-auth-micro
