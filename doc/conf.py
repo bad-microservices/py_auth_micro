@@ -25,9 +25,6 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
     "sphinx_autodoc_typehints",
-    "sphinx.ext.viewcode",
-    "sphinx_copybutton",
-    "sphinx_immaterial",
 ]
 
 # Todo settings
@@ -44,8 +41,8 @@ napoleon_use_admonition_for_examples = True
 napoleon_use_admonition_for_notes = True
 napoleon_use_admonition_for_references = True
 napoleon_use_ivar = True
-napoleon_use_param = True
-napoleon_use_rtype = True
+napoleon_use_param = False
+napoleon_use_rtype = False
 
 autodoc_default_options = {
     "member-order": "bysource",
@@ -54,91 +51,24 @@ autodoc_default_options = {
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
+html_show_sourcelink = True
+
+
+html_theme_options = {
+  "show_nav_level": 0,
+  "show_toc_level": 2,
+  "show_prev_next": False
+}
+
+html_sidebars = {
+  "**": []
+}
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-
-html_show_sourcelink = True
-
-html_theme = "sphinx_immaterial"
-
-
-# material theme options (see theme.conf for more information)
-html_theme_options = {
-    "icon": {
-        "repo": "fontawesome/brands/github",
-    },
-    "site_url": "https://bad-microservices.github.io/py_auth_micro/",
-    "repo_url": "https://github.com/bad-microservices/py_auth_micro",
-    "repo_name": "py_auth_micro",
-    "repo_type": "github",
-    "edit_uri": "blob/main/doc",
-    # "google_analytics": ["UA-XXXXX", "auto"],
-    "globaltoc_collapse": True,
-    "features": [
-        "navigation.expand",
-        # "navigation.tabs",
-        # "toc.integrate",
-        "navigation.sections",
-        # "navigation.instant",
-        # "header.autohide",
-        "navigation.top",
-        # "navigation.tracking",
-        # "search.highlight",
-        "search.share",
-        "toc.follow",
-        "toc.sticky",
-    ],
-    "palette": [
-        {
-            "media": "(prefers-color-scheme: light)",
-            "scheme": "default",
-            "primary": "light-green",
-            "accent": "light-blue",
-            "toggle": {
-                "icon": "material/lightbulb-outline",
-                "name": "Switch to dark mode",
-            },
-        },
-        {
-            "media": "(prefers-color-scheme: dark)",
-            "scheme": "slate",
-            "primary": "deep-orange",
-            "accent": "lime",
-            "toggle": {
-                "icon": "material/lightbulb",
-                "name": "Switch to light mode",
-            },
-        },
-    ],
-    # BEGIN: version_dropdown
-    "version_dropdown": True,
-    "version_info": [
-        {
-            "version": "https://bad-microservices.github.io/py_auth_micro",
-            "title": "Github Pages",
-            "aliases": [],
-        },
-    ],
-    # END: version_dropdown
-    "toc_title_is_page_title": True,
-    # BEGIN: social icons
-    "social": [
-        {
-            "icon": "fontawesome/brands/github",
-            "link": "https://github.com/bad-microservices/py_auth_micro",
-        },
-        {
-            "icon": "fontawesome/brands/discord",
-            "link": "https://discord.gg/7HUxPP9QNS",
-        },
-    ],
-    # END: social icons
-}
-
-
+html_theme = "pydata_sphinx_theme"
 html_static_path = ["_static"]
 
 # The master toctree document.
-master_doc = "toc"
+master_doc = "index"

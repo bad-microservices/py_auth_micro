@@ -1,7 +1,7 @@
 from tortoise import fields
 from tortoise.models import Model
 
-from ._user import User
+from py_auth_micro.Models._user import User
 
 
 class Group(Model):

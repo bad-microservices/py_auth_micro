@@ -1,6 +1,6 @@
 from jwt_helper import JWTValidator
 
-from ..Config import AppConfig
+from py_auth_micro.Config import AppConfig
 
 
 def _get_info_from_token(

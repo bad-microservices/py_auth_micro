@@ -4,7 +4,6 @@ Currently there are Classes to work with the following identity Sources:
 
     * :code:`LoginLocal` - for a Local Database
     * :code:`LoginLDAP` - for LDAP
-    * :code:`LoginKerberos` - for Kerberos
 
 These are choosen automatically by the :code:`auth_type` field connected to every Users DB Entry.
 The :code:`auth_type` is an :code:`AuthSource`.
@@ -15,22 +14,18 @@ import logging
 from tortoise.exceptions import DoesNotExist
 from typing import Optional
 
-from ._loginbaseclass import LoginBaseClass
-from ._loginldap import LoginLDAP
-from ._loginkerberos import LoginKerberos
-from ._loginlocal import LoginLocal
+from py_auth_micro.LoginHandler._loginbaseclass import LoginBaseClass
+from py_auth_micro.LoginHandler._loginldap import LoginLDAP
+from py_auth_micro.LoginHandler._loginlocal import LoginLocal
 
-from ..Config import LDAPConfig
-from ..Models import User
-
-from ..Core import LDAPHelper, AuthSource
+from py_auth_micro.Config import LDAPConfig
+from py_auth_micro.Models import User
+from py_auth_micro.Core import LDAPHelper, AuthSource
 
 LOGINHANDLER = {
     AuthSource.LDAP: LoginLDAP,
     AuthSource.LOCAL: LoginLocal,
-    AuthSource.KERBEROS: LoginKerberos,
 }
-
 
 
 async def login(
@@ -88,7 +83,9 @@ async def _get_user_from_db(
             helper = LDAPHelper(ldap_config, username, password)
             # if the user can be authenticated with ldap create him in the DB
             if helper.login():
-                logger.debug(f"User '{username}' could auth with the LDAP -> creating DB Entry")
+                logger.debug(
+                    f"User '{username}' could auth with the LDAP -> creating DB Entry"
+                )
                 user = await User.create(
                     username=username,
                     password_hash=None,
@@ -105,4 +102,4 @@ async def _get_user_from_db(
         raise exc
 
 
-__all__ = ["login", "LoginBaseClass", "LoginLDAP", "LoginLocal", "LoginKerberos"]
+__all__ = ["login", "LoginBaseClass", "LoginLDAP", "LoginLocal"]

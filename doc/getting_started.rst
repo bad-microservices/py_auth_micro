@@ -60,3 +60,13 @@ From Source
 .. code-block:: bash
 
     python3 -m pip install python-ldap
+
+
+Example implementation
+------------------------
+
+Here is an example auth flow you could implement with this library
+
+.. image:: diagrams_png/auth_flow.png
+  :width: 800
+  :alt: example auth_flow

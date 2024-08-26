@@ -6,12 +6,12 @@ from tortoise.exceptions import DoesNotExist
 from jwt_helper import JWTValidator
 from typing import Optional
 
-from ..Models import User
-from ..Exceptions import AlreadyExists
-from ..Config import AppConfig
-from ..Core import AuthSource
+from py_auth_micro.Models import User
+from py_auth_micro.Exceptions import AlreadyExists
+from py_auth_micro.Config import AppConfig
+from py_auth_micro.Core import AuthSource
 
-from ._misc import _get_info_from_token
+from py_auth_micro.WorkFlows._misc import _get_info_from_token
 
 
 @dataclass
@@ -43,7 +43,11 @@ class UserWorkflow:
 
         users = await User.all().values_list("username", flat=True)
 
-        return {"resp_code": 200, "resp_data": {"users": users}}
+        resp_code = 200
+        if len(users) == 0:
+            resp_code = 204
+
+        return {"resp_code": resp_code, "resp_data": {"users": users}}
 
     async def _create_user(
         self,
@@ -158,10 +162,7 @@ class UserWorkflow:
         Returns:
             dict: Dictionary containing User Information
         """
-        try:
-            user = await User.get(username=username)
-        except Exception:
-            return "wtf"
+        user = await User.get(username=username)
 
         user_dict = {}
         user_dict["username"] = user.username
@@ -169,20 +170,23 @@ class UserWorkflow:
         user_dict["created_at"] = user.created_at.isoformat()
 
         if access_token is None:
-            return user_dict
+            return {"resp_code": 200, "resp_data": user_dict}
 
         requesting_user, is_admin = _get_info_from_token(
             self.jwt_validator, self.app_cfg, access_token
         )
 
         if user.username != requesting_user and not is_admin:
-            return user_dict
+            return {"resp_code": 200, "resp_data": user_dict}
 
         token = await user.token
 
+        #add groups
+        user_dict["groups"] = await user.groups.all().values_list("name", flat=True)
+
         if token is None:
             user_dict["token_info"] = None
-            return user_dict
+            return {"resp_code": 200, "resp_data": user_dict}
 
         user_dict["token_info"] = {
             "valid_until": token.valid_until.isoformat(),
@@ -323,7 +327,7 @@ class UserWorkflow:
                 raise ValueError("bad email")
             user.email = email
 
-        if activated is not None:
+        if activated is not None and is_admin:
             user.activated = activated
 
         if password is not None:

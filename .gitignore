@@ -5,6 +5,7 @@ _static
 .vscode/settings.json
 
 /_build
+/doc/_build
 /dist
 /*.pem
 /*.pub

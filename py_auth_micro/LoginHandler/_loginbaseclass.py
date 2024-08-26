@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 class LoginBaseClass(ABC):
     """Abstract Baseclass for Authenticating Users
 
-    This Is an abstract baseclass describing all functions needed to be implemented by a generic LoginHandler.
+    This is an abstract baseclass describing all functions needed to be implemented by a generic LoginHandler.
     """
 
     def __init__(self, **kwargs):

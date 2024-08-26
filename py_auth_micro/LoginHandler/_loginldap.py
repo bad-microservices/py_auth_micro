@@ -35,6 +35,12 @@ class LoginLDAP(LoginBaseClass):
             bool: Successfull Login
         """
         logger = logging.getLogger(__name__)
+
+        if self.ldap_config is None:
+            logger.debug("no ldap_config provided... can't do ldap logins")
+            return False
+
+
         logger.debug(f"tyring to login {self.username} via LDAP")
 
         try:

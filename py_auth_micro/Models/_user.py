@@ -8,7 +8,7 @@ from jwt_helper import JWTEncoder
 
 from py_auth_micro.Core import AuthSource
 from py_auth_micro.Config import AppConfig
-from py_auth_micro._token import Token
+from py_auth_micro.Models._token import Token
 
 
 class User(Model):

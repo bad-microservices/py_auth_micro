@@ -1,11 +1,11 @@
-checkfiles = jwt_helper/ doc/
+checkfiles = py_auth_micro/ doc/
 
 help:
-	@echo "jwt_helper Makefile"
+	@echo "py_auth_micro Makefile"
 	@echo "usage: make <target>"
 	@echo "Targets:"
 	@echo "    - doc       Build the documentation"
-	@echo "    - package   Build jwt_helper as package"
+	@echo "    - package   Build py_auth_micro as package"
 	@echo "    - deps      Installs needed Dependencies"
 	@echo "    - devdeps   Installs needed Dependencies for development"
 
@@ -17,7 +17,9 @@ devdeps:
 
 doc: devdeps
 	rm -fR ./_build
+	cp ./CHANGELOG.rst ./doc/CHANGELOG.rst
 	pipenv run sphinx-build -M html doc _build
+	rm -fR ./doc/CHANGELOG.rst
 
 package: devdeps
 	rm -fR dist/

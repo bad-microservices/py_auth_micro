@@ -1,37 +1,37 @@
 @startuml
 
-== Authentifizierung ==
+== Authentification ==
 User -> Auth_Server: POST /login [UserName,Password]
-Auth_Server --[#blue]> Auth_Server: ermittle Login Typ (Lokal,LDAP)
+Auth_Server --[#blue]> Auth_Server: detect login type (Lokal,LDAP)
 alt LDAP
     Auth_Server -> LDAP: Credentials
-    alt Credentials Richtig
+    alt Credentials correct
         LDAP -[#green]> Auth_Server: OK,Userdata
         Auth_Server --[#blue]> Auth_Server: Update Groups
-    else Credentials Falsch
+    else Credentials wrong
         LDAP -[#red]> Auth_Server: Error
     end
 else LOCAL
     Auth_Server --[#blue]> Auth_Server: Check Credentials
 end
 
-alt Credentials Richtig
+alt Credentials correct
     Auth_Server -[#green]> User: ID-Token
-else Credentials Falsch
-    Auth_Server -[#red]> User: Fehler
+else Credentials wrong
+    Auth_Server -[#red]> User: Error
 end
 
-== Autorisierung ==
+== Authorisation ==
 
 User -> Auth_Server: POST /token [ID-Token,IP]
 Auth_Server --[#blue]> Auth_Server: verify Token Signature
 Auth_Server --[#blue]> Auth_Server: verify Token Lifetime
 Auth_Server --[#blue]> Auth_Server: verify Token IP against Request IP
 Auth_Server --[#blue]> Auth_Server: verify Token ID
-alt ID-Token gültig
+alt ID-Token valid
     Auth_Server -[#green]> User : Access-Token
-else ID-Token ungültig
-    Auth_Server -[#red]> User : Fehler
+else ID-Token invalid
+    Auth_Server -[#red]> User : Error
 end
 
 @enduml

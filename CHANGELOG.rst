@@ -1,6 +1,37 @@
 Changelog
 =============
 
+0.1.7
+-------
+* Removed :code:`LoginHandler.LoginKerberos` because it's not needed
+* documentation:
+   * switched theme to ``pydata``
+   * added :code:`Exceptions` submodule documentation
+* Code:
+   * switched to absolute imports instead of relative imports 
+
+0.1.6
+-------
+* BUGFIX: :code:`UserWorkflow.change_user` now only allows changing the :code:`activated` attribute if the calling user is an admin
+* :code:`UserWorkflow.get_user` now includes a list of groups if the requesting user is an admin or the requested user himself
+
+0.1.5
+-------
+* BUGFIX: :code:`UserWorkflow` returned wrong data format for :code:`get_user`
+* BUGFIX: fixed typo in response message when deleting a group
+
+0.1.4
+-------
+* BUGFIX: :code:`group_members` this time for real...
+
+0.1.3
+-------
+* BUGFIX: :code:`group_members` had a bug which is now fixed....
+
+0.1.2
+-------
+* new feature :code:`group_members` in :code:`GroupWorkflow` will return a list of all group Members.
+
 0.1.1
 -------
 * BUGFIX: :code:`_perm_and_name_check` in :code:`GroupWorkflow` got called without kwargs... again
