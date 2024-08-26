@@ -1,5 +1,7 @@
-from dataclasses import dataclass
 import ssl
+
+from typing import Optional
+from dataclasses import dataclass
 
 
 @dataclass
@@ -21,7 +23,7 @@ class DBConfig:
     password: str
     host: str = "127.0.0.1"
     port: int = 3306
-    ca_file: str = None
+    ca_file: Optional[str] = None
 
     @property
     def sslcontext(self):

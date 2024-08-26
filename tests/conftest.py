@@ -12,21 +12,20 @@ from py_auth_micro.WorkFlows import GroupWorkflow
 DBURL = "sqlite://db.sqlite3"
 
 
-@pytest.fixture
-def initialize_tests(request):
+def blub(loop: asyncio.AbstractEventLoop):
+    if not loop.is_closed():
+        loop.run_until_complete(Tortoise.close_connections())
+
+
+@pytest_asyncio.fixture(scope="function", loop_scope="function")
+async def initialize_tests(request):
     config = getDBConfig(app_label="models", modules=["py_auth_micro.Models"])
     loop = asyncio.get_event_loop()
 
-    async def _init_db() -> None:
-        await Tortoise.init(config)
-        await Tortoise.generate_schemas(safe=False)
+    await Tortoise.init(config)
+    await Tortoise.generate_schemas(safe=False)
 
-    async def _close_db() -> None:
-        await Tortoise.close_connections()
-
-    loop.run_until_complete(_init_db())
-
-    request.addfinalizer(lambda: loop.run_until_complete(_close_db()))
+    request.addfinalizer(lambda: blub(loop))
 
 
 @pytest.fixture

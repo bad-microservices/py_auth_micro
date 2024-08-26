@@ -78,7 +78,7 @@ class SessionWorkflow:
 
         return {"resp_code": 500, "resp_data": {"msg": "Logout was not successfull"}}
 
-    async def get_access_token(self, *, id_token: str, ip: str = "*", **kwargs) -> str:
+    async def get_access_token(self, *, id_token: str, ip: str = "*", **kwargs) -> dict:
         """Verifies an ID-Token and returns an Access-Token
 
         Args:

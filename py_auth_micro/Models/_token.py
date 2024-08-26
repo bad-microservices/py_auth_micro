@@ -1,8 +1,15 @@
 import logging
 import datetime
-
-from tortoise import fields
 from tortoise.models import Model
+from tortoise.fields import (
+    Field,
+    OneToOneField,
+    BigIntField,
+    DatetimeField,
+    CharField,
+    CharEnumField,
+    OneToOneRelation,
+)
 from typing import Optional
 from jwt_helper import SignMethod, JWTEncoder, JWTValidator
 
@@ -29,29 +36,29 @@ class Token(Model):
                     For example `prod` for the Production VHOST and `test` for the Test VHOST.
     """
 
-    user: fields.OneToOneRelation["User"] = fields.OneToOneField(
+    user: OneToOneRelation["User"] = OneToOneField(  # type: ignore
         "models.User",
         related_name="token",
         description="The User which relates to this Token",
     )
-    token_id: int = fields.BigIntField(
+    token_id: Field[int] = BigIntField(
         unique=True,
         description="ID of the Issued Token",
-        pk=True,
+        primary_key=True,
     )
-    ip: str = fields.CharField(
+    ip: Field[str] = CharField(
         max_length=39, description="IP That is valid for this User"
     )
-    valid_until: datetime.datetime = fields.DatetimeField(
+    valid_until: Field[datetime.datetime] = DatetimeField(
         auto_now_add=True,
         description="To what Time is this Token Valid",
         allows_generated=True,
         GENERATED_SQL="NOW()",
     )
-    last_use: datetime.datetime = fields.DatetimeField(
+    last_use: Field[datetime.datetime] = DatetimeField(
         auto_now=True, description="Last Access Token creation time", null=True
     )
-    sign_method: SignMethod = fields.CharEnumField(
+    sign_method: SignMethod = CharEnumField(
         SignMethod,
         max_length=10,
         description="""Which Method got used to sign this Token
@@ -63,7 +70,7 @@ Valid Options>
  - RS384
  - RS512""",
     )
-    vhost: str = fields.CharField(
+    vhost: Field[str] = CharField(
         max_length=100, default="test", description="The Vhost for this Token"
     )
 
@@ -119,7 +126,7 @@ Valid Options>
         logger = logging.getLogger(__name__)
         logger.info(f"verifying ID-Token from {ip}")
         logger.debug(f"token: {id_jwt}")
-        token_content = jwt_validator.get_jwt_as_dict(id_jwt)
+        token_content = jwt_validator.get_jwt_as_dict(id_jwt)  # type: dict[str, dict]
 
         token_header = token_content["headers"]
 

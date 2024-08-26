@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass
 from tortoise.exceptions import DoesNotExist
 from jwt_helper import JWTValidator
-from typing import Optional
+from typing import Optional, Union
 
 from py_auth_micro.Models import User
 from py_auth_micro.Exceptions import AlreadyExists
@@ -26,7 +26,9 @@ class UserWorkflow:
     jwt_validator: JWTValidator
     app_cfg: AppConfig
 
-    async def get_all(self, *, access_token: str, **kwargs) -> dict[str, list[str]]:
+    async def get_all(
+        self, *, access_token: str, **kwargs
+    ) -> dict[str, int | list[str]]:
         """Returns a list of all Usernames.
 
         Args:
@@ -41,13 +43,13 @@ class UserWorkflow:
         if not self.jwt_validator.verify_jwt(access_token):
             raise PermissionError("Not Authorized")
 
-        users = await User.all().values_list("username", flat=True)
+        users = await User.all().values_list("username", flat=True)  # type: ignore
 
         resp_code = 200
         if len(users) == 0:
             resp_code = 204
 
-        return {"resp_code": resp_code, "resp_data": {"users": users}}
+        return {"resp_code": resp_code, "resp_data": {"users": users}}  # type: ignore
 
     async def _create_user(
         self,
@@ -179,30 +181,34 @@ class UserWorkflow:
         if user.username != requesting_user and not is_admin:
             return {"resp_code": 200, "resp_data": user_dict}
 
-        token = await user.token
+        tokens = await user.token
+        # in theory a user could have multiple id tokens
 
-        #add groups
+        # add groups
         user_dict["groups"] = await user.groups.all().values_list("name", flat=True)
 
-        if token is None:
+        if tokens is None:
             user_dict["token_info"] = None
             return {"resp_code": 200, "resp_data": user_dict}
 
-        user_dict["token_info"] = {
-            "valid_until": token.valid_until.isoformat(),
-            "last_use": token.last_use.isoformat(),
-            "vhost": token.vhost,
-        }
+        for token in tokens:
+            # we iterate over array of 1 token to make the typechecker happy
+            user_dict["token_info"] = {
+                "valid_until": token.valid_until.isoformat(),
+                "last_use": token.last_use.isoformat(),
+                "vhost": token.vhost,
+            }
 
         if is_admin:
             user_dict["auth_type"] = user.auth_type.name
-            user_dict["token_info"].update(
-                {
-                    "kid": token.token_id,
-                    "ip": token.ip,
-                    "sign_method": token.sign_method.value,
-                }
-            )
+            for token in tokens:
+                user_dict["token_info"].update(
+                    {
+                        "kid": token.token_id,
+                        "ip": token.ip,
+                        "sign_method": token.sign_method.value,
+                    }  # type: ignore
+                )
 
         return {"resp_code": 200, "resp_data": user_dict}
 

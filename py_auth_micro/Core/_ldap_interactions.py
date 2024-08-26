@@ -1,7 +1,9 @@
+from typing import Optional
 from dataclasses import dataclass
 
+
 try:
-    import ldap
+    import ldap  # type: ignore
 except ImportError:
     print("cant import python-ldap\nldap connection won't work")
 
@@ -39,7 +41,7 @@ class LDAPHelper:
             userfilter = f"(&(objectClass=user)(sAMAccountName={self.username}))"
             _, data = ldap_connection.search_s(
                 self.config.base_dn, ldap.SCOPE_SUBTREE, userfilter, None
-            )[0]
+            )[0]  # type: ignore
             groups_raw = data["memberOf"]
             groups = []
             for group in groups_raw:
@@ -70,7 +72,7 @@ class LDAPHelper:
         valid_groups = []
         for group in self._userinfo["groups"]:
             if group.startswith(self.config.groups_prefix):
-                valid_groups.append(group[len(self.config.groups_prefix) :])
+                valid_groups.append(group[len(self.config.groups_prefix) :])  # type: ignore
 
         return valid_groups
 
@@ -88,8 +90,8 @@ class LDAPHelper:
 
 
 class _ConnectionHandler:
+    config: LDAPConfig
     conn = None
-    config: LDAPConfig = None
 
     def __init__(self, ldap_config: LDAPConfig, username: str, password: str):
         self.config = ldap_config

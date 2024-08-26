@@ -77,6 +77,8 @@ async def _get_user_from_db(
 
     except DoesNotExist as exc:
         logger.info(f"user '{username}' does not exist in DB")
+        if ldap_config is None:
+            raise DoesNotExist(User)
         # try LDAP
         try:
             logger.debug(f"try to auth user '{username}' with ldap")
@@ -96,7 +98,7 @@ async def _get_user_from_db(
                 return user
         except Exception:
             logger.debug(f"user '{username}' could not auth with LDAP")
-            raise DoesNotExist
+            raise DoesNotExist(User)
 
         # if the user cant log in with ldap reraise the exc
         raise exc

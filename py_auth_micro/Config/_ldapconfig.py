@@ -1,5 +1,5 @@
+from typing import Optional
 from dataclasses import dataclass
-
 
 @dataclass
 class LDAPConfig:
@@ -19,4 +19,4 @@ class LDAPConfig:
     group: str = "allowed_to_login"
     groups_prefix: str = "API_PERM"
     domain: str = "ad.local"
-    ca_file: str = None
+    ca_file: Optional[str] = None

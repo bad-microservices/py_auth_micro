@@ -24,7 +24,7 @@ def _get_info_from_token(
     jwt_content = jwt_validator.get_jwt_as_dict(access_token)
 
     header: dict = jwt_content["headers"]
-    user = jwt_content["payload"]["user"]
+    user: str = jwt_content["payload"]["user"]  # type: ignore
 
     is_admin = app_cfg.admin_group in header.get("aud", None)
 
