@@ -72,7 +72,7 @@ class GroupWorkflow:
 
     async def group_members(
         self, *, access_token: str, groupname: str, **kwargs
-    ) -> list:
+    ) -> dict:
         """This Function returns all Users in a group
 
         Args:
@@ -93,7 +93,9 @@ class GroupWorkflow:
         if group is None:
             raise ValueError("Group does not exist")
 
-        userlist = await group.users.all().values_list("username", flat=True)
+        userlist: list[str] = await group.users.all().values_list(
+            "username", flat=True
+        )  # type: list[str] # type:ignore
         return {"resp_code": 200, "resp_data": {"users": userlist}}
 
     async def create_group(
@@ -126,7 +128,7 @@ class GroupWorkflow:
         }
 
         if re.fullmatch(self.app_cfg.group_regex, groupname) is None:
-            error_response["resp_data"] = {"msg":"Group Name is invalid"}
+            error_response["resp_data"] = {"msg": "Group Name is invalid"}
             return error_response
 
         try:

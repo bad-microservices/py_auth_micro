@@ -1,4 +1,4 @@
-from tortoise import fields
+from tortoise.fields import Field, CharField, ManyToManyRelation
 from tortoise.models import Model
 
 from py_auth_micro.Models._user import User
@@ -13,8 +13,9 @@ class Group(Model):
         name (str): Name of the Usergroup
         users (list[User]): List of Users in this group
     """
-    name: str = fields.CharField(unique=True, max_length=50, pk=True)
-    users: fields.ManyToManyRelation[User]
+
+    name: Field[str] = CharField(unique=True, max_length=50, primary_key=True)
+    users: ManyToManyRelation[User]
 
     def __str__(self):
         return self.name

@@ -2,7 +2,19 @@ import logging
 import datetime
 
 from typing import Optional
-from tortoise import fields
+from tortoise.fields import (
+    Field,
+    OneToOneField,
+    BigIntField,
+    DatetimeField,
+    CharField,
+    CharEnumField,
+    OneToOneRelation,
+    BinaryField,
+    BooleanField,
+    ManyToManyField,
+    ReverseRelation,
+)
 from tortoise.models import Model
 from jwt_helper import JWTEncoder
 
@@ -22,13 +34,13 @@ class User(Model):
         activated (bool): User verified his email Address.
     """
 
-    username: str = fields.CharField(
-        max_length=30, unique=True, pk=True, description="Username"
+    username: Field[str] = CharField(
+        max_length=30, unique=True, primary_key=True, description="Username"
     )
-    password_hash: bytes = fields.BinaryField(
+    password_hash: Field[bytes] = BinaryField(
         description="Hash of the password (if local user)", null=True
     )
-    auth_type: AuthSource = fields.CharEnumField(
+    auth_type: AuthSource = CharEnumField(
         AuthSource,
         default=AuthSource.LOCAL,
         description=(
@@ -39,27 +51,27 @@ class User(Model):
             " - KERBEROS"
         ),
     )
-    email: str = fields.CharField(
+    email: Field[str] = CharField(
         max_length=100,
         unique=True,
         description="Email address for the user",
     )
-    activated: bool = fields.BooleanField(
+    activated: Field[bool] = BooleanField(
         description="0: User did not verify his Email\n1: User verified his Email"
     )
-    created_at: datetime.datetime = fields.DatetimeField(
+    created_at: Field[datetime.datetime] = DatetimeField(
         auto_now_add=True,
         allows_generated=True,
         GENERATED_SQL="NOW()",
         description="When was this User added to the Database",
     )
-    modified_at: datetime.datetime = fields.DatetimeField(
+    modified_at: Field[datetime.datetime] = DatetimeField(
         auto_now=True,
         allows_generated=True,
         GENERATED_SQL="NOW()",
         description="When was the user modified",
     )
-    groups = fields.ManyToManyField(
+    groups = ManyToManyField(
         model_name="models.Group",
         through="usergroup",
         related_name="users",
@@ -67,7 +79,7 @@ class User(Model):
         backward_key="name",
     )
 
-    token: fields.ReverseRelation[Token]
+    token: ReverseRelation[Token]
 
     async def create_id_token(
         self,
@@ -101,7 +113,9 @@ class User(Model):
             tz=datetime.timezone.utc
         ) + datetime.timedelta(minutes=app_config.id_token_valid_time)
 
-        logger.debug(f"creating token for {self.username} with following specs:\nip: {ip}\nmethod: {jwt_encoder.signmethod.value}\nvhost: {vhost}\nvhost: {vhost}")
+        logger.debug(
+            f"creating token for {self.username} with following specs:\nip: {ip}\nmethod: {jwt_encoder.signmethod.value}\nvhost: {vhost}\nvhost: {vhost}"
+        )
 
         token = await Token.create(
             user=self,
@@ -122,7 +136,9 @@ class User(Model):
         logger = logging.getLogger(__name__)
         logger.info(f"revoking ID-Token for {self.username}")
         if self.token is not None:
-            await self.token.delete()
+            tokens = await self.token
+            for token in tokens:
+                await token.delete()
         return True
 
     def __str__(self):

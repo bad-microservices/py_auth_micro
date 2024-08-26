@@ -12,14 +12,11 @@ class LoginLocal(LoginBaseClass):
         username (str): Username we want to authenticate.
         password (str): password for that specified user.
         user (User): Database instance of that user.
-
-    Returns:
-        _type_: _description_
     """
 
     username: str
     password: str
-    user: User = None
+    user: User
 
     async def login(self) -> bool:
         """Hashes the users password and compares it against the Database.

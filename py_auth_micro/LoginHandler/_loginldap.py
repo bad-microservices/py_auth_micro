@@ -1,5 +1,5 @@
 try:
-    import ldap
+    import ldap # type: ignore
 except ImportError:
     pass
 import logging
@@ -23,7 +23,7 @@ class LoginLDAP(LoginBaseClass):
     ldap_config: LDAPConfig
     username: str
     password: str
-    user: User = None
+    user: User
 
     async def login(self) -> bool:
         """Checks User Credentials against the LDAP/AD.
@@ -39,7 +39,6 @@ class LoginLDAP(LoginBaseClass):
         if self.ldap_config is None:
             logger.debug("no ldap_config provided... can't do ldap logins")
             return False
-
 
         logger.debug(f"tyring to login {self.username} via LDAP")
 
@@ -83,7 +82,9 @@ class LoginLDAP(LoginBaseClass):
 
         # add user to group he should be in
         for add_group in add_groups:
-            tmpgr, _ = await Group.get_or_create({"name": add_group}, name=add_group)
+            tmpgr, new = await Group.get_or_create({"name": add_group}, name=add_group)
+            if new:
+                await tmpgr.save()
             await self.user.groups.add(tmpgr)
 
         # remove user from group he is not a member of anymore

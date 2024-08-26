@@ -1,6 +1,13 @@
 Changelog
 =============
 
+0.2.0
+-------
+* Alot of type hint cleanup
+* fixed a bug where non existing groups in active directory sync interfiered with login.
+   * missing groups now get created and saved!
+* updated tests for more moden pytest versions
+
 0.1.7
 -------
 * Removed :code:`LoginHandler.LoginKerberos` because it's not needed
