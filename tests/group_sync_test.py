@@ -12,11 +12,14 @@ class TestGroupWorkflow:
             username="TestUser", email="test@test.test", activated=True
         )
 
-        add_groups = ["does_not_exist_1", "does not exist as well"]
+        add_groups = ["does not exist as well", "does_not_exist_1"]
 
         for add_group in add_groups:
             tmpgr = await Group.get_or_none(name=add_group)
             if tmpgr is None:
                 tmpgr = await Group.create(name=add_group)
             await user.groups.add(tmpgr)
-        pass
+
+        groups = await Group.all().values_list("name", flat=True)
+        assert groups == add_groups
+        assert await user.groups == await Group.all()
