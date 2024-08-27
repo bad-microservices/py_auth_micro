@@ -28,7 +28,7 @@ class UserWorkflow:
 
     async def get_all(
         self, *, access_token: str, **kwargs
-    ) -> dict[str, int | list[str]]:
+    ) -> dict:
         """Returns a list of all Usernames.
 
         Args:
