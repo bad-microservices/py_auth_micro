@@ -1,6 +1,12 @@
 Changelog
 =============
 
+0.2.1
+------
+* Removed Typehint which is not supported by python3.9
+* added Test for the LDAP group sync with non existing groups
+* Fixed a bug where non existing groups caused problems for LDAP Login the first time
+
 0.2.0
 -------
 * Alot of type hint cleanup

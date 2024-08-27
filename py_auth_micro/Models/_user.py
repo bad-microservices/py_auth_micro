@@ -4,12 +4,9 @@ import datetime
 from typing import Optional
 from tortoise.fields import (
     Field,
-    OneToOneField,
-    BigIntField,
     DatetimeField,
     CharField,
     CharEnumField,
-    OneToOneRelation,
     BinaryField,
     BooleanField,
     ManyToManyField,

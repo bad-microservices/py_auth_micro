@@ -2,4 +2,3 @@
 
 class AlreadyExists(Exception):
     """An Exception to indicate a given Object already exists and can't be created again"""
-    pass

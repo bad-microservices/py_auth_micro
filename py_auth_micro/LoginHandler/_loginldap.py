@@ -82,9 +82,9 @@ class LoginLDAP(LoginBaseClass):
 
         # add user to group he should be in
         for add_group in add_groups:
-            tmpgr, new = await Group.get_or_create({"name": add_group}, name=add_group)
-            if new:
-                await tmpgr.save()
+            tmpgr = await Group.get_or_none(name=add_group)
+            if tmpgr is None:
+                tmpgr = await Group.create(name=add_group)
             await self.user.groups.add(tmpgr)
 
         # remove user from group he is not a member of anymore

@@ -4,7 +4,7 @@ import re
 from dataclasses import dataclass
 from tortoise.exceptions import DoesNotExist
 from jwt_helper import JWTValidator
-from typing import Optional, Union
+from typing import Optional
 
 from py_auth_micro.Models import User
 from py_auth_micro.Exceptions import AlreadyExists
@@ -28,7 +28,7 @@ class UserWorkflow:
 
     async def get_all(
         self, *, access_token: str, **kwargs
-    ) -> dict[str, int | list[str]]:
+    ) -> dict:
         """Returns a list of all Usernames.
 
         Args:
