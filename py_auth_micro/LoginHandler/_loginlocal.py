@@ -4,6 +4,8 @@ import logging
 from ..Models import User
 from ._loginbaseclass import LoginBaseClass
 
+logger = logging.getLogger(__name__)
+
 
 class LoginLocal(LoginBaseClass):
     """Login Handler for Local Users
@@ -27,13 +29,10 @@ class LoginLocal(LoginBaseClass):
         Returns:
             bool: Successfull Login
         """
-        logger = logging.getLogger(__name__)
+
         logger.debug(f"tyring to login {self.username} Localy")
-
         pw_hash = self.user.password_hash
-
         pw_matches = bcrypt.checkpw(self.password.encode("utf-8"), pw_hash)
-
         logger.debug(f"PW matches for User '{self.username}': {pw_matches}")
 
         return pw_matches

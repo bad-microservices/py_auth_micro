@@ -16,6 +16,9 @@ from jwt_helper import SignMethod, JWTEncoder, JWTValidator
 from py_auth_micro.Config import AppConfig
 
 
+logger = logging.getLogger(__name__)
+
+
 class Token(Model):
     """Databse Entity Holding Information around issued Identity Tokens
 
@@ -84,8 +87,8 @@ Valid Options>
         Returns:
             str: The ID-JWT
         """
-        logger = logging.getLogger(__name__)
-        logger.info(f"creating ID-Token JWT with id: {self.token_id}")
+
+        logger.debug(f"creating ID-Token JWT with id: {self.token_id}")
         usergroups = await self.user.groups.all().values_list("name", flat=True)
 
         token = jwt_encoder.create_jwt(
@@ -123,8 +126,7 @@ Valid Options>
         Returns:
             Token: the matched Database Token instance.
         """
-        logger = logging.getLogger(__name__)
-        logger.info(f"verifying ID-Token from {ip}")
+        logger.debug(f"verifying ID-Token from {ip}")
         logger.debug(f"token: {id_jwt}")
         token_content = jwt_validator.get_jwt_as_dict(id_jwt)  # type: dict[str, dict]
 
@@ -150,7 +152,7 @@ Valid Options>
             logger.error("VHost missmatch!")
             raise ValueError("VHost missmatch!")
 
-        logger.info("Token is valid")
+        logger.debug("Token is valid")
         # return the Token from the Database
         return token
 
@@ -167,8 +169,7 @@ Valid Options>
         Returns:
             str: a JWT Token
         """
-        logger = logging.getLogger(__name__)
-        logger.info("creating Access-Token")
+        logger.debug("creating Access-Token")
         usergroups = await (await self.user).groups.all().values_list("name", flat=True)
         logger.debug(f"Token Groups: {usergroups}")
         return jwt_encoder.create_jwt(

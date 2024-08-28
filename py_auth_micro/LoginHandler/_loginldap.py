@@ -1,5 +1,5 @@
 try:
-    import ldap # type: ignore
+    import ldap  # type: ignore
 except ImportError:
     pass
 import logging
@@ -8,6 +8,8 @@ from ._loginbaseclass import LoginBaseClass
 from ..Config import LDAPConfig
 from ..Core import LDAPHelper
 from ..Models import User, Group
+
+logger = logging.getLogger(__name__)
 
 
 class LoginLDAP(LoginBaseClass):
@@ -34,7 +36,6 @@ class LoginLDAP(LoginBaseClass):
         Returns:
             bool: Successfull Login
         """
-        logger = logging.getLogger(__name__)
 
         if self.ldap_config is None:
             logger.debug("no ldap_config provided... can't do ldap logins")

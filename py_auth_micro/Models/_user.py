@@ -10,7 +10,7 @@ from tortoise.fields import (
     BinaryField,
     BooleanField,
     ManyToManyField,
-    ReverseRelation,
+    OneToOneRelation
 )
 from tortoise.models import Model
 from jwt_helper import JWTEncoder
@@ -18,6 +18,8 @@ from jwt_helper import JWTEncoder
 from py_auth_micro.Core import AuthSource
 from py_auth_micro.Config import AppConfig
 from py_auth_micro.Models._token import Token
+
+logger = logging.getLogger(__name__)
 
 
 class User(Model):
@@ -76,7 +78,7 @@ class User(Model):
         backward_key="name",
     )
 
-    token: ReverseRelation[Token]
+    token: OneToOneRelation[Token]
 
     async def create_id_token(
         self,
@@ -96,8 +98,7 @@ class User(Model):
         Returns:
             Token: _description_
         """
-        logger = logging.getLogger(__name__)
-        logger.info(f"creating token for {self.username}")
+        logger.debug(f"creating token for {self.username}")
         # check if old Token exists
         token = await Token.get_or_none(user=self.username)
 
@@ -130,12 +131,9 @@ class User(Model):
         Returns:
             bool: The Token got revoked.
         """
-        logger = logging.getLogger(__name__)
-        logger.info(f"revoking ID-Token for {self.username}")
+        logger.debug(f"revoking ID-Token for {self.username}")
         if self.token is not None:
-            tokens = await self.token
-            for token in tokens:
-                await token.delete()
+            await self.token.delete()
         return True
 
     def __str__(self):

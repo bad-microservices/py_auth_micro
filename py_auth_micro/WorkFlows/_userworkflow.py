@@ -26,9 +26,7 @@ class UserWorkflow:
     jwt_validator: JWTValidator
     app_cfg: AppConfig
 
-    async def get_all(
-        self, *, access_token: str, **kwargs
-    ) -> dict:
+    async def get_all(self, *, access_token: str, **kwargs) -> dict:
         """Returns a list of all Usernames.
 
         Args:
@@ -181,34 +179,30 @@ class UserWorkflow:
         if user.username != requesting_user and not is_admin:
             return {"resp_code": 200, "resp_data": user_dict}
 
-        tokens = await user.token
-        # in theory a user could have multiple id tokens
-
         # add groups
         user_dict["groups"] = await user.groups.all().values_list("name", flat=True)
 
-        if tokens is None:
+        token = await user.token
+
+        if token is None:
             user_dict["token_info"] = None
             return {"resp_code": 200, "resp_data": user_dict}
 
-        for token in tokens:
-            # we iterate over array of 1 token to make the typechecker happy
-            user_dict["token_info"] = {
-                "valid_until": token.valid_until.isoformat(),
-                "last_use": token.last_use.isoformat(),
-                "vhost": token.vhost,
-            }
+        user_dict["token_info"] = {
+            "valid_until": token.valid_until.isoformat(),
+            "last_use": token.last_use.isoformat(),
+            "vhost": token.vhost,
+        }
 
         if is_admin:
             user_dict["auth_type"] = user.auth_type.name
-            for token in tokens:
-                user_dict["token_info"].update(
-                    {
-                        "kid": token.token_id,
-                        "ip": token.ip,
-                        "sign_method": token.sign_method.value,
-                    }  # type: ignore
-                )
+            user_dict["token_info"].update(
+                {
+                    "kid": token.token_id,
+                    "ip": token.ip,
+                    "sign_method": token.sign_method.value,
+                }  # type: ignore
+            )
 
         return {"resp_code": 200, "resp_data": user_dict}
 

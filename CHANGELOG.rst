@@ -1,6 +1,12 @@
 Changelog
 =============
 
+0.2.2
+------
+* Token to User Relation is a 1 to 1 relation and not 1 to n.
+   * Workflows got some fixes
+* Changed alot of logging.info to logging.debug for clarity
+
 0.2.1
 ------
 * Removed Typehint which is not supported by python3.9

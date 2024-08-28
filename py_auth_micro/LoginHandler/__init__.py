@@ -60,7 +60,7 @@ async def login(
         password=password,
     )
     if not await login_handler.login():
-        logger.debug(f"Could not log in User '{username}'!")
+        logger.error(f"Could not log in User '{username}'!")
         raise ValueError("could not log in")
     logger.info(f"User '{username}' successfully logged in.")
     return login_handler.user
