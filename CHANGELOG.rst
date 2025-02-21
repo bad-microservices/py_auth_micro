@@ -1,6 +1,10 @@
 Changelog
 =============
 
+0.2.4
+------
+* BUGFIX: removed unneeded :code:`print` statement which raised :code:`KeyError` on a missing :code:`mail` attribute
+
 0.2.3
 ------
 * Autogenerate Email for LDAP Users without an :code:`mail` attribute

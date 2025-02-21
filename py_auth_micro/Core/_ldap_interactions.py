@@ -50,9 +50,7 @@ class LDAPHelper:
                 group = group[group.index("CN=") + 3 : group.index(",")]
                 groups.append(group)
 
-        print(data["mail"][0])
         mail = data.get("mail", None)
-
         if mail is not None:
             if isinstance(mail, list):
                 mail = mail[0]
