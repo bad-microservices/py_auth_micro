@@ -1,6 +1,11 @@
 Changelog
 =============
 
+0.2.3
+------
+* Autogenerate Email for LDAP Users without an :code:`mail` attribute
+
+
 0.2.2
 ------
 * Token to User Relation is a 1 to 1 relation and not 1 to n.

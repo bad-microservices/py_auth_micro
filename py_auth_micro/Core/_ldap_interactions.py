@@ -30,6 +30,8 @@ class LDAPHelper:
     @property
     def email(self):
         """Extracts the Users email after he sucessfully logged in (if he needs to be created in the Database)"""
+        if self._userinfo.get("email", None) is None:
+            return f"generated_{self.username}@{self.config.domain}"
         return self._userinfo["email"]
 
     def _get_user_info(self):
@@ -48,12 +50,16 @@ class LDAPHelper:
                 group = group[group.index("CN=") + 3 : group.index(",")]
                 groups.append(group)
 
-        try:
-            mail = data["mail"][0]
-        except IndexError:
-            mail = data["mail"]
+        print(data["mail"][0])
+        mail = data.get("mail", None)
 
-        self._userinfo = {"groups": groups, "email": mail.decode("utf-8")}
+        if mail is not None:
+            if isinstance(mail, list):
+                mail = mail[0]
+            if isinstance(mail, bytes):
+                mail = mail.decode("utf-8")
+
+        self._userinfo = {"groups": groups, "email": mail}
 
     def __init__(self, ldap_cfg: LDAPConfig, username: str, password: str):
         self.config = ldap_cfg
